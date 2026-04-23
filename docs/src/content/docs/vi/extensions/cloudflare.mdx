@@ -1,0 +1,43 @@
+---
+title: Realtime Agent trên Cloudflare
+description: Kết nối agent Agents SDK từ Cloudflare Workers/workerd bằng transport chuyên dụng.
+---
+
+import { Aside, Steps, Code } from '@astrojs/starlight/components';
+import cloudflareBasicExample from '../../../../../../examples/docs/extensions/cloudflare-basic.ts?raw';
+
+Cloudflare Workers và các workerd runtime khác không thể mở outbound WebSocket bằng constructor `WebSocket` toàn cục. Để đơn giản hóa việc kết nối Realtime Agent từ các môi trường này, extensions package cung cấp transport chuyên dụng thực hiện `fetch()`-based upgrade nội bộ.
+
+<Aside type="caution">
+  Adapter này vẫn ở beta. Bạn có thể gặp edge case issue hoặc bug. Hãy báo cáo
+  qua [GitHub issues](https://github.com/openai/openai-agents-js/issues). Cho
+  Node.js-style API trong Workers, hãy cân nhắc bật `nodejs_compat`.
+</Aside>
+
+## Thiết lập
+
+<Steps>
+
+1. **Cài đặt extensions package.**
+
+   ```bash
+   npm install @openai/agents-extensions
+   ```
+
+2. **Tạo transport và gắn vào session.**
+
+   <Code lang="typescript" code={cloudflareBasicExample} />
+
+3. **Kết nối `RealtimeSession`.**
+
+   ```typescript
+   await session.connect({ apiKey: 'your-openai-ephemeral-or-server-key' });
+   ```
+
+</Steps>
+
+## Ghi chú
+
+- Cloudflare transport dùng `fetch()` với `Upgrade: websocket` bên dưới và bỏ qua việc đợi socket `open` event, phù hợp với workerd API.
+- Tất cả tính năng `RealtimeSession` (tool, guardrail, v.v.) hoạt động bình thường với transport này.
+- Dùng `DEBUG=openai-agents*` để kiểm tra log chi tiết khi phát triển.

@@ -1,0 +1,101 @@
+---
+title: Streaming
+description: Stream output agent theo thời gian thực bằng Runner
+---
+
+import { Code } from '@astrojs/starlight/components';
+import basicStreamingExample from '../../../../../../examples/docs/streaming/basicStreaming.ts?raw';
+import nodeTextStreamExample from '../../../../../../examples/docs/streaming/nodeTextStream.ts?raw';
+import handleAllEventsExample from '../../../../../../examples/docs/streaming/handleAllEvents.ts?raw';
+import streamedHITLExample from '../../../../../../examples/docs/streaming/streamedHITL.ts?raw';
+import runRawModelStreamEventExample from '../../../../../../examples/docs/streaming/runRawModelStreamEvent.ts?raw';
+import openaiResponsesRawModelStreamEventExample from '../../../../../../examples/docs/streaming/openaiResponsesRawModelStreamEvent.ts?raw';
+import runItemStreamEventExample from '../../../../../../examples/docs/streaming/runItemStreamEvent.ts?raw';
+import runAgentUpdatedStreamEventExample from '../../../../../../examples/docs/streaming/runAgentUpdatedStreamEvent.ts?raw';
+
+Agents SDK có thể cung cấp output từ model và các bước thực thi khác một cách tăng dần. Streaming giữ UI responsive và tránh phải đợi toàn bộ kết quả cuối trước khi cập nhật cho người dùng.
+
+## Bật streaming
+
+Truyền tùy chọn `{ stream: true }` vào `Runner.run()` để nhận object streaming thay vì kết quả đầy đủ:
+
+<Code lang="typescript" code={basicStreamingExample} title="Bật streaming" />
+
+Khi streaming được bật, `stream` trả về implement interface `AsyncIterable`. Mỗi event yield mô tả điều gì đã xảy ra trong lần chạy.
+
+### Lấy text output
+
+Gọi `stream.toTextStream()` để nhận stream text được emit. Khi `compatibleWithNodeStreams` là `true`, giá trị trả về là Node.js `Readable` thông thường.
+
+<Code
+  lang="typescript"
+  code={nodeTextStreamExample}
+  title="Log text khi nhận được"
+/>
+
+Promise `stream.completed` resolve khi lần chạy và mọi callback pending hoàn tất.
+
+### Lắng nghe tất cả event
+
+Bạn có thể dùng vòng lặp `for await` để kiểm tra mỗi event khi nhận:
+
+<Code
+  lang="typescript"
+  code={handleAllEventsExample}
+  title="Lắng nghe tất cả event"
+/>
+
+## Các loại event
+
+Stream yield ba loại event:
+
+### raw_model_stream_event
+
+<Code
+  lang="typescript"
+  code={runRawModelStreamEventExample}
+  title="RunRawModelStreamEvent"
+/>
+
+### run_item_stream_event
+
+<Code
+  lang="typescript"
+  code={runItemStreamEventExample}
+  title="RunItemStreamEvent"
+/>
+
+`name` xác định loại item:
+
+| `name`                    | Ý nghĩa                           |
+| ------------------------- | --------------------------------- |
+| `message_output_created`  | Item message output đã tạo.       |
+| `handoff_requested`       | Model yêu cầu handoff.            |
+| `handoff_occurred`        | Runtime hoàn thành handoff.       |
+| `tool_called`             | Item tool call đã emit.           |
+| `tool_output`             | Item kết quả tool đã emit.        |
+| `tool_approval_requested` | Tool call tạm dừng chờ phê duyệt. |
+
+### agent_updated_stream_event
+
+<Code
+  lang="typescript"
+  code={runAgentUpdatedStreamEventExample}
+  title="RunAgentUpdatedStreamEvent"
+/>
+
+## Human in the loop khi streaming
+
+Streaming tương thích với handoff tạm dừng thực thi (ví dụ khi tool yêu cầu phê duyệt).
+
+<Code
+  lang="typescript"
+  code={streamedHITLExample}
+  title="Xử lý phê duyệt khi streaming"
+/>
+
+## Mẹo
+
+- Nhớ đợi `stream.completed` trước khi thoát.
+- Tùy chọn `{ stream: true }` chỉ áp dụng cho lần gọi cung cấp nó.
+- Nếu ứng dụng chỉ cần kết quả text, dùng `toTextStream()`.

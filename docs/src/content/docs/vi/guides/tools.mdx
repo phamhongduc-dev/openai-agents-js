@@ -1,0 +1,157 @@
+---
+title: Tool
+description: Cung cấp khả năng cho agent qua hosted tool hoặc function tool tùy chỉnh
+---
+
+import { Code } from '@astrojs/starlight/components';
+import toolsFunctionExample from '../../../../../../examples/docs/tools/functionTools.ts?raw';
+import toolsHostedToolsExample from '../../../../../../examples/docs/tools/hostedTools.ts?raw';
+import localBuiltInToolsExample from '../../../../../../examples/docs/tools/localBuiltInTools.ts?raw';
+import nonStrictSchemaTools from '../../../../../../examples/docs/tools/nonStrictSchemaTools.ts?raw';
+import toolSearchExample from '../../../../../../examples/docs/tools/toolSearch.ts?raw';
+import agentsAsToolsExample from '../../../../../../examples/docs/tools/agentsAsTools.ts?raw';
+import agentsAsToolsStreamingExample from '../../../../../../examples/docs/tools/agentsAsToolsStreaming.ts?raw';
+import agentToolRunContextExample from '../../../../../../examples/docs/tools/agentToolRunContext.ts?raw';
+import mcpLocalServer from '../../../../../../examples/docs/tools/mcpLocalServer.ts?raw';
+import codexToolExample from '../../../../../../examples/docs/tools/codexTool.ts?raw';
+import codexRunContextThreadExample from '../../../../../../examples/docs/tools/codexRunContextThread.ts?raw';
+
+Tool cho phép Agent **thực hiện hành động** – lấy dữ liệu, gọi API bên ngoài, chạy code, hoặc thậm chí dùng computer. JavaScript/TypeScript SDK hỗ trợ sáu loại:
+
+> Đọc trang này sau [Agent](/openai-agents-js/vi/guides/agents) khi bạn biết agent nào nên sở hữu tác vụ và muốn cung cấp khả năng cho nó.
+
+1. **Hosted OpenAI tool** – chạy cùng model trên server OpenAI. _(web search, file search, code interpreter, image generation, tool search)_
+2. **Built-in execution tool** – tool SDK cung cấp sẵn chạy bên ngoài model. _(computer use và apply_patch chạy local; shell có thể chạy local hoặc trong hosted container)_
+3. **Function tool** – bọc bất kỳ hàm local nào với JSON schema để LLM có thể gọi.
+4. **Agent dùng như tool** – expose toàn bộ Agent như tool có thể gọi.
+5. **MCP server** – gắn server Model Context Protocol (local hoặc remote).
+6. **Thử nghiệm: Codex tool** – bọc Codex SDK như function tool để chạy tác vụ workspace-aware.
+
+---
+
+## Các loại tool
+
+### 1. Hosted tool (OpenAI Responses API)
+
+Khi dùng `OpenAIResponsesModel` bạn có thể thêm các built-in tool sau:
+
+| Tool | Type string | Mục đích |
+| --- | --- | --- |
+| Web search | `'web_search'` | Tìm kiếm Internet. |
+| File / retrieval search | `'file_search'` | Query vector store trên OpenAI. |
+| Code Interpreter | `'code_interpreter'` | Chạy code trong sandbox. |
+| Image generation | `'image_generation'` | Sinh ảnh từ text. |
+| Tool search | `'tool_search'` | Tải deferred function tool, namespace, hoặc searchable MCP tool lúc runtime. |
+
+<Code lang="typescript" code={toolsHostedToolsExample} title="Hosted tool" />
+
+---
+
+### 2. Built-in execution tool
+
+Tool này built-in trong SDK, nhưng thực thi xảy ra bên ngoài model response:
+
+- **Computer use** – implement interface `Computer` và truyền vào `computerTool()`.
+- **Shell** – cung cấp implementation `Shell` local, hoặc cấu hình hosted container environment.
+- **Apply patch** – implement interface `Editor` và truyền vào `applyPatchTool()`.
+
+<Code
+  lang="typescript"
+  code={localBuiltInToolsExample}
+  title="Built-in execution tool"
+/>
+
+---
+
+### 3. Function tool
+
+Bạn có thể biến **bất kỳ** hàm nào thành tool với helper `tool()`.
+
+<Code
+  lang="typescript"
+  code={toolsFunctionExample}
+  title="Function tool với Zod parameter"
+/>
+
+#### Tham khảo tùy chọn
+
+| Field | Bắt buộc | Mô tả |
+| --- | --- | --- |
+| `name` | Không | Mặc định là tên hàm. |
+| `description` | Có | Mô tả rõ ràng cho LLM. |
+| `parameters` | Có | Zod schema hoặc raw JSON schema. |
+| `strict` | Không | Khi `true` (mặc định), SDK trả lỗi model nếu tham số không validate. |
+| `execute` | Có | Logic nghiệp vụ. |
+| `needsApproval` | Không | Yêu cầu phê duyệt trước khi thực thi. |
+| `isEnabled` | Không | Expose tool có điều kiện theo lần chạy. |
+| `timeoutMs` | Không | Timeout cho mỗi lần gọi. |
+
+#### Deferred tool loading với tool search
+
+Tool search cho phép model chỉ tải định nghĩa tool cần thiết lúc runtime thay vì gửi mọi schema ngay từ đầu.
+
+<Code
+  lang="typescript"
+  code={toolSearchExample}
+  title="Deferred tool loading với tool search"
+/>
+
+---
+
+### 4. Agent dùng như tool
+
+Đôi khi bạn muốn Agent _hỗ trợ_ Agent khác mà không hoàn toàn handoff cuộc hội thoại. Dùng `agent.asTool()`:
+
+<Code
+  lang="typescript"
+  code={agentsAsToolsExample}
+  title="Agent dùng như tool"
+/>
+
+#### Streaming event từ agent tool
+
+Agent tool có thể stream mọi event lần chạy lồng về ứng dụng:
+
+<Code
+  lang="typescript"
+  code={agentsAsToolsStreamingExample}
+  title="Streaming agent tool"
+/>
+
+---
+
+### 5. MCP server
+
+Bạn có thể expose tool qua server [Model Context Protocol (MCP)](https://modelcontextprotocol.io/):
+
+<Code lang="typescript" code={mcpLocalServer} title="MCP server local" />
+
+Xem [hướng dẫn MCP](/openai-agents-js/vi/guides/mcp) để biết chi tiết.
+
+---
+
+### 6. Thử nghiệm: Codex tool
+
+`codexTool()` là function tool định tuyến model tool call tới Codex SDK.
+
+```bash
+npm install @openai/agents-extensions @openai/codex-sdk
+```
+
+<Code lang="typescript" code={codexToolExample} title="Codex tool thử nghiệm" />
+
+---
+
+## Chiến lược tool và best practice
+
+- **Mô tả ngắn, rõ ràng** – mô tả tool làm _gì_ và _khi nào dùng_.
+- **Validate input** – dùng Zod schema cho strict JSON validation.
+- **Tránh side-effect trong error handler** – `errorFunction` nên trả string hữu ích, không throw.
+- **Một trách nhiệm mỗi tool** – tool nhỏ, có thể kết hợp dẫn đến suy luận model tốt hơn.
+
+## Hướng dẫn liên quan
+
+- [Agent](/openai-agents-js/vi/guides/agents) cho định nghĩa agent mang tool và kiểm soát `toolUseBehavior`.
+- [Điều phối Agent](/openai-agents-js/vi/guides/multi-agent) cho quyết định agent như tool vs handoff.
+- [Chạy Agent](/openai-agents-js/vi/guides/running-agents) cho luồng thực thi, streaming, và trạng thái hội thoại.
+- [Guardrail](/openai-agents-js/vi/guides/guardrails) để validate input hoặc output tool.

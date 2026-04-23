@@ -1,0 +1,78 @@
+---
+title: Handoff
+description: Ủy quyền tác vụ từ agent này sang agent khác
+---
+
+import { Aside, Code } from '@astrojs/starlight/components';
+import basicUsageExample from '../../../../../../examples/docs/handoffs/basicUsage.ts?raw';
+import customizeHandoffExample from '../../../../../../examples/docs/handoffs/customizeHandoff.ts?raw';
+import handoffInputExample from '../../../../../../examples/docs/handoffs/handoffInput.ts?raw';
+import inputFilterExample from '../../../../../../examples/docs/handoffs/inputFilter.ts?raw';
+import recommendedPromptExample from '../../../../../../examples/docs/handoffs/recommendedPrompt.ts?raw';
+
+Handoff cho phép agent ủy quyền một phần cuộc hội thoại cho agent khác. Điều này hữu ích khi các agent khác nhau chuyên về các lĩnh vực cụ thể. Ví dụ trong ứng dụng hỗ trợ khách hàng, bạn có thể có agent xử lý đặt chỗ, hoàn tiền hoặc FAQ.
+
+Handoff được biểu diễn như tool cho LLM. Nếu bạn handoff tới agent tên `Refund Agent`, tên tool sẽ là `transfer_to_refund_agent`.
+
+> Đọc trang này sau [Agent](/openai-agents-js/vi/guides/agents#composition-patterns) khi bạn biết agent chuyên biệt nên tiếp quản cuộc hội thoại. Nếu agent chuyên biệt nên ở phía sau agent gốc, dùng [agent dùng như tool](/openai-agents-js/vi/guides/tools#4-agents-as-tools) thay thế.
+
+## Tạo handoff
+
+Mọi agent đều chấp nhận tùy chọn `handoffs`. Nó có thể chứa instance `Agent` khác hoặc object `Handoff` được trả về bởi helper `handoff()`.
+
+### Sử dụng cơ bản
+
+<Code lang="typescript" code={basicUsageExample} title="Handoff cơ bản" />
+
+### Tùy chỉnh handoff qua `handoff()`
+
+Hàm `handoff()` cho phép tinh chỉnh tool được sinh ra.
+
+- `agent` – agent để handoff tới.
+- `toolNameOverride` – ghi đè tên tool mặc định `transfer_to_<agent_name>`.
+- `toolDescriptionOverride` – ghi đè mô tả tool mặc định.
+- `onHandoff` – callback khi handoff xảy ra.
+- `inputType` – schema cho tham số tool-call handoff.
+- `inputFilter` – lọc history truyền cho agent tiếp theo.
+- `isEnabled` – boolean hoặc predicate để chỉ expose handoff cho các lần chạy phù hợp.
+
+<Code
+  lang="typescript"
+  code={customizeHandoffExample}
+  title="Handoff tùy chỉnh"
+/>
+
+## Handoff input
+
+Đôi khi bạn muốn model đính kèm payload cấu trúc nhỏ khi chọn handoff. Định nghĩa `inputType` và `onHandoff` cùng nhau.
+
+<Code lang="typescript" code={handoffInputExample} title="Handoff input" />
+
+## Input filter
+
+Mặc định handoff nhận toàn bộ lịch sử hội thoại. Để sửa đổi những gì truyền cho agent tiếp theo, cung cấp `inputFilter`.
+
+<Code lang="typescript" code={inputFilterExample} title="Input filter" />
+
+<Aside type="note">
+  Handoff ở trong cùng một lần chạy. Input guardrail vẫn chỉ áp dụng cho agent
+  đầu tiên, và output guardrail chỉ cho agent tạo output cuối cùng.
+</Aside>
+
+## Prompt được khuyến nghị
+
+LLM phản hồi đáng tin cậy hơn khi prompt đề cập handoff. SDK cung cấp prefix khuyến nghị qua `RECOMMENDED_PROMPT_PREFIX`.
+
+<Code
+  lang="typescript"
+  code={recommendedPromptExample}
+  title="Prompt khuyến nghị"
+/>
+
+## Hướng dẫn liên quan
+
+- [Agent](/openai-agents-js/vi/guides/agents#composition-patterns) cho chọn giữa manager và handoff.
+- [Điều phối Agent](/openai-agents-js/vi/guides/multi-agent) cho đánh đổi workflow tổng thể.
+- [Tool](/openai-agents-js/vi/guides/tools#4-agents-as-tools) cho thay thế kiểu manager dùng `agent.asTool()`.
+- [Chạy Agent](/openai-agents-js/vi/guides/running-agents) cho hành vi handoff khi runtime.
+- [Kết quả](/openai-agents-js/vi/guides/results#final-output) cho `finalOutput` có kiểu xuyên handoff graph.

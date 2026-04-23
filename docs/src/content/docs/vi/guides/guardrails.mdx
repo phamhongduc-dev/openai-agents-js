@@ -1,0 +1,86 @@
+---
+title: Guardrail
+description: Validate hoặc biến đổi input và output của agent
+---
+
+import { Code } from '@astrojs/starlight/components';
+import inputGuardrailExample from '../../../../../../examples/docs/guardrails/guardrails-input.ts?raw';
+import outputGuardrailExample from '../../../../../../examples/docs/guardrails/guardrails-output.ts?raw';
+import toolGuardrailsExample from '../../../../../../examples/docs/guardrails/toolGuardrails.ts?raw';
+
+Guardrail có thể chạy song song với agent hoặc chặn thực thi cho đến khi hoàn tất, cho phép bạn kiểm tra và validate user input hoặc agent output. Ví dụ, bạn có thể chạy một model nhẹ làm guardrail trước khi gọi model đắt tiền. Nếu guardrail phát hiện sử dụng độc hại, nó có thể kích hoạt lỗi và ngăn model tốn kém chạy.
+
+Có hai loại guardrail:
+
+1. **Input guardrail** chạy trên user input ban đầu.
+2. **Output guardrail** chạy trên output cuối cùng của agent.
+
+## Ranh giới workflow
+
+Guardrail được gắn vào agent, nhưng không nhất thiết chạy trên mọi agent trong workflow:
+
+- **Input guardrail** chỉ chạy cho agent đầu tiên trong chuỗi.
+- **Output guardrail** chỉ chạy cho agent tạo ra output cuối cùng.
+- **Tool guardrail** chạy trên mọi lần gọi function-tool, với input guardrail trước thực thi và output guardrail sau thực thi.
+
+Nếu bạn cần kiểm tra quanh mỗi lệnh gọi function-tool tùy chỉnh trong workflow bao gồm manager hoặc handoff, hãy dùng **tool guardrail** thay vì input/output guardrail cấp agent.
+
+## Input guardrail
+
+Input guardrail chạy qua ba bước:
+
+1. Guardrail nhận cùng input được truyền cho agent.
+2. Hàm guardrail thực thi và trả về [`GuardrailFunctionOutput`](/openai-agents-js/openai/agents/interfaces/guardrailfunctionoutput) bọc trong [`InputGuardrailResult`](/openai-agents-js/openai/agents/interfaces/inputguardrailresult).
+3. Nếu `tripwireTriggered` là `true`, lỗi [`InputGuardrailTripwireTriggered`](/openai-agents-js/openai/agents/classes/inputguardrailtripwiretriggered) được throw.
+
+> **Lưu ý** Input guardrail dành cho user input, nên chúng chỉ chạy nếu agent là agent _đầu tiên_ trong workflow.
+
+### Chế độ thực thi
+
+- `runInParallel: true` (mặc định) khởi chạy guardrail song song với LLM/tool call. Giảm thiểu độ trễ nhưng model có thể đã tiêu tốn token hoặc chạy tool nếu guardrail kích hoạt sau.
+- `runInParallel: false` chạy guardrail **trước** khi gọi model, ngăn tiêu tốn token và thực thi tool khi guardrail chặn request. Dùng khi bạn ưu tiên an toàn và chi phí hơn độ trễ.
+
+## Output guardrail
+
+Output guardrail chạy qua 3 bước:
+
+1. Guardrail nhận output do agent tạo ra.
+2. Hàm guardrail thực thi và trả về [`GuardrailFunctionOutput`](/openai-agents-js/openai/agents/interfaces/guardrailfunctionoutput) bọc trong [`OutputGuardrailResult`](/openai-agents-js/openai/agents/interfaces/outputguardrailresult).
+3. Nếu `tripwireTriggered` là `true`, lỗi [`OutputGuardrailTripwireTriggered`](/openai-agents-js/openai/agents/classes/outputguardrailtripwiretriggered) được throw.
+
+> **Lưu ý** Output guardrail chỉ chạy nếu agent là agent _cuối cùng_ trong workflow.
+
+## Tool guardrail
+
+Tool guardrail bao bọc **function tool** và cho phép bạn validate hoặc chặn lệnh gọi tool trước và sau thực thi.
+
+- **Input tool guardrail** chạy trước khi tool thực thi và có thể từ chối lệnh gọi hoặc throw tripwire.
+- **Output tool guardrail** chạy sau khi tool thực thi và có thể thay thế output hoặc throw tripwire.
+
+Tool guardrail trả về `behavior`: `allow`, `rejectContent`, hoặc `throwException`.
+
+## Tripwire
+
+Khi guardrail thất bại, nó báo hiệu qua tripwire. Ngay khi tripwire được kích hoạt, runner throw lỗi tương ứng và dừng thực thi.
+
+## Triển khai guardrail
+
+Guardrail đơn giản là function trả về `GuardrailFunctionOutput`.
+
+<Code
+  lang="typescript"
+  code={inputGuardrailExample}
+  title="Ví dụ input guardrail"
+/>
+
+Output guardrail hoạt động tương tự.
+
+<Code
+  lang="typescript"
+  code={outputGuardrailExample}
+  title="Ví dụ output guardrail"
+/>
+
+Tool input/output guardrail:
+
+<Code lang="typescript" code={toolGuardrailsExample} title="Tool guardrail" />

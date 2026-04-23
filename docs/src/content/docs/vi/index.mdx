@@ -1,0 +1,106 @@
+---
+title: OpenAI Agents SDK TypeScript
+description: OpenAI Agents SDK cho TypeScript giúp bạn xây dựng ứng dụng AI dạng agent trong một package gọn nhẹ, dễ sử dụng với rất ít abstraction.
+---
+
+import { LinkCard } from '@astrojs/starlight/components';
+import { Code } from '@astrojs/starlight/components';
+import Hero from '../../../components/Hero.astro';
+
+import helloWorldExample from '../../../../../examples/docs/hello-world.ts?raw';
+
+<Hero>
+  <Fragment slot="title">OpenAI Agents SDK</Fragment>
+  <Fragment slot="description">
+    Xây dựng text agent và voice agent với một bộ primitive nhỏ gọn.
+  </Fragment>
+  <Fragment slot="cta">Bắt đầu</Fragment>
+</Hero>
+
+## Tổng quan
+
+[OpenAI Agents SDK cho TypeScript](https://github.com/openai/openai-agents-js) giúp bạn xây dựng ứng dụng AI dạng agent trong một package gọn nhẹ, dễ sử dụng với rất ít abstraction. Đây là phiên bản nâng cấp sẵn sàng cho production từ thí nghiệm trước đó của chúng tôi về agent, [Swarm](https://github.com/openai/swarm/tree/main), và cũng [có sẵn phiên bản Python](https://github.com/openai/openai-agents-python). Agents SDK có một bộ primitive rất nhỏ:
+
+- **Agent** là các LLM được trang bị instruction và tool
+- **Agent dùng như tool / Handoff** cho phép agent ủy quyền cho agent khác để xử lý các tác vụ cụ thể
+- **Guardrail** cho phép validate input đầu vào của agent
+
+Kết hợp với TypeScript, các primitive này đủ mạnh để biểu diễn các mối quan hệ phức tạp giữa tool và agent, cho phép bạn xây dựng ứng dụng thực tế mà không cần đường cong học tập dốc. Ngoài ra, SDK đi kèm **tracing** tích hợp sẵn giúp bạn trực quan hóa và debug các luồng agent, cũng như đánh giá và thậm chí fine-tune model cho ứng dụng của bạn.
+
+## Tại sao nên dùng Agents SDK
+
+SDK có hai nguyên tắc thiết kế chính:
+
+1. Đủ tính năng để đáng dùng, nhưng đủ ít primitive để học nhanh.
+2. Hoạt động tốt ngay từ đầu, nhưng bạn có thể tùy chỉnh chính xác những gì xảy ra.
+
+Dưới đây là các tính năng chính của SDK:
+
+- **Agent loop**: Vòng lặp agent tích hợp sẵn xử lý việc gọi tool, gửi kết quả lại cho LLM, và tiếp tục cho đến khi tác vụ hoàn tất.
+- **TypeScript-first**: Điều phối và kết nối các agent bằng các tính năng ngôn ngữ TypeScript gốc, không cần học abstraction mới.
+- **Agent dùng như tool / Handoff**: Cơ chế mạnh mẽ để phối hợp và ủy quyền công việc giữa nhiều agent.
+- **Guardrail**: Chạy validation input và kiểm tra an toàn song song với việc thực thi agent, và fail nhanh khi kiểm tra không đạt.
+- **Function tool**: Biến bất kỳ hàm TypeScript nào thành tool với tự động sinh schema và validation dựa trên Zod.
+- **Gọi tool từ MCP server**: Tích hợp tool từ MCP server sẵn có, hoạt động giống như function tool.
+- **Session**: Lớp bộ nhớ lâu dài để duy trì context làm việc trong agent loop.
+- **Human in the loop**: Cơ chế tích hợp sẵn để đưa con người vào quy trình xuyên suốt các lần chạy agent.
+- **Tracing**: Tracing tích hợp sẵn để trực quan hóa, debug và giám sát workflow, hỗ trợ bộ công cụ đánh giá, fine-tuning và distillation của OpenAI.
+- **Realtime Agent**: Xây dựng voice agent mạnh mẽ với các tính năng như phát hiện ngắt lời tự động, quản lý context, guardrail, và nhiều hơn nữa.
+
+## Cài đặt
+
+```bash
+npm install @openai/agents zod
+```
+
+SDK yêu cầu Zod v4; cài `zod` qua npm sẽ lấy bản phát hành v4 mới nhất.
+
+## Chọn điểm bắt đầu
+
+Hầu hết người dùng lần đầu chỉ cần một trong các entry point sau:
+
+| Bắt đầu với | Dùng khi | Ghi chú |
+| --- | --- | --- |
+| `@openai/agents` | Bạn đang xây dựng hầu hết ứng dụng text hoặc voice. | Mặc định được khuyến nghị. Bao gồm thiết lập OpenAI provider và cung cấp voice API tại `@openai/agents/realtime`. |
+| `@openai/agents-realtime` | Bạn chỉ cần package Realtime độc lập. | Hữu ích cho ứng dụng voice chỉ trên browser hoặc khi bạn muốn phạm vi package hẹp hơn. |
+| Package cấp thấp (`@openai/agents-core`, `@openai/agents-openai`, `@openai/agents-extensions`) | Bạn cần kết hợp cấp thấp hơn, kết nối provider tùy chỉnh, hoặc tích hợp cụ thể. | Hầu hết người dùng mới có thể bỏ qua cho đến khi có nhu cầu cụ thể. |
+
+## Ví dụ Hello world
+
+<Code lang="typescript" code={helloWorldExample} title="Hello World" />
+
+(_Nếu chạy ví dụ này, hãy đảm bảo bạn đã thiết lập biến môi trường `OPENAI_API_KEY`_)
+
+```bash
+export OPENAI_API_KEY=sk-...
+```
+
+## Bắt đầu từ đây
+
+Hãy chọn một hướng đi trước, làm cho nó hoạt động từ đầu đến cuối, rồi quay lại các hướng dẫn chi tiết hơn.
+
+<LinkCard
+  title="Quickstart"
+  href="/openai-agents-js/vi/guides/quickstart"
+  description="Xây dựng text agent đầu tiên và tìm hiểu quy trình làm việc cốt lõi của SDK."
+/>
+
+<LinkCard
+  title="Voice Agents Quickstart"
+  href="/openai-agents-js/vi/guides/voice-agents/quickstart"
+  description="Bắt đầu với hướng voice Realtime khi bạn xây dựng tương tác bằng giọng nói."
+/>
+
+## Chọn hướng đi
+
+Dùng bảng này khi bạn biết việc muốn làm nhưng không biết trang nào giải thích nó.
+
+| Mục tiêu | Bắt đầu tại đây |
+| --- | --- |
+| Xây dựng text agent đầu tiên và xem một lần chạy hoàn chỉnh | [Quickstart](/openai-agents-js/vi/guides/quickstart) |
+| Thêm function tool, hosted tool, hoặc agent dùng như tool | [Tool](/openai-agents-js/vi/guides/tools) |
+| Quyết định giữa handoff và điều phối kiểu manager | [Điều phối Agent](/openai-agents-js/vi/guides/multi-agent) |
+| Giữ bộ nhớ xuyên các lượt | [Chạy Agent](/openai-agents-js/vi/guides/running-agents) và [Session](/openai-agents-js/vi/guides/sessions) |
+| Dùng model OpenAI, websocket transport, hoặc provider không phải OpenAI | [Model](/openai-agents-js/vi/guides/models) |
+| Xem output, run item, interruption, và trạng thái resume | [Kết quả](/openai-agents-js/vi/guides/results) |
+| Xây dựng voice agent độ trễ thấp | [Voice Agents Quickstart](/openai-agents-js/vi/guides/voice-agents/quickstart) |

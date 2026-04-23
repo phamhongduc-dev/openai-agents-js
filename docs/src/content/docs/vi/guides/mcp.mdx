@@ -1,0 +1,94 @@
+---
+title: Model Context Protocol (MCP)
+description: Tìm hiểu cách sử dụng MCP server làm tool
+---
+
+import { Code } from '@astrojs/starlight/components';
+import hostedAgentExample from '../../../../../../examples/docs/mcp/hostedAgent.ts?raw';
+import hostedExample from '../../../../../../examples/docs/mcp/hosted.ts?raw';
+import hostedStreamExample from '../../../../../../examples/docs/mcp/hostedStream.ts?raw';
+import hostedHITLExample from '../../../../../../examples/docs/mcp/hostedHITL.ts?raw';
+import hostedConnectorExample from '../../../../../../examples/docs/mcp/hostedConnector.ts?raw';
+import streamableHttpExample from '../../../../../../examples/docs/mcp/streamableHttp.ts?raw';
+import stdioExample from '../../../../../../examples/docs/mcp/stdio.ts?raw';
+import toolFilterExample from '../../../../../../examples/docs/mcp/tool-filter.ts?raw';
+import mcpServersExample from '../../../../../../examples/docs/mcp/mcpServers.ts?raw';
+
+[**Model Context Protocol (MCP)**](https://modelcontextprotocol.io) là giao thức mở chuẩn hóa cách ứng dụng cung cấp tool và context cho LLM. Hãy nghĩ MCP như cổng USB-C cho ứng dụng AI.
+
+SDK hỗ trợ ba loại MCP server:
+
+1. **Hosted MCP server tool** – MCP server remote dùng như tool bởi OpenAI Responses API
+2. **Streamable HTTP MCP server** – server local hoặc remote implement Streamable HTTP transport
+3. **Stdio MCP server** – server truy cập qua standard input/output
+
+| Bạn cần gì | Tùy chọn khuyến nghị |
+| --- | --- |
+| Gọi remote server công khai với model OpenAI responses mặc định | **1. Hosted MCP tool** |
+| Dùng remote server với tool call kích hoạt local | **2. Streamable HTTP** |
+| Dùng server local chỉ hỗ trợ giao thức standard-I/O | **3. Stdio** |
+
+## 1. Hosted MCP server tool
+
+Hosted tool đẩy toàn bộ round-trip vào model. OpenAI Responses API gọi remote tool endpoint và stream kết quả về model.
+
+<Code lang="typescript" code={hostedAgentExample} title="hostedAgent.ts" />
+
+<Code lang="typescript" code={hostedExample} title="Chạy với hosted MCP tool" />
+
+Để stream kết quả MCP tăng dần:
+
+<Code
+  lang="typescript"
+  code={hostedStreamExample}
+  title="Chạy với hosted MCP tool (streaming)"
+/>
+
+### Luồng approval tùy chọn
+
+<Code
+  lang="typescript"
+  code={hostedHITLExample}
+  title="Human in the loop với hosted MCP tool"
+/>
+
+### Connector-backed hosted server
+
+<Code
+  lang="typescript"
+  code={hostedConnectorExample}
+  title="Connector-backed hosted MCP tool"
+/>
+
+## 2. Streamable HTTP MCP server
+
+<Code
+  lang="typescript"
+  code={streamableHttpExample}
+  title="Chạy với Streamable HTTP MCP server"
+/>
+
+## 3. Stdio MCP server
+
+<Code lang="typescript" code={stdioExample} title="Chạy với Stdio MCP server" />
+
+## Quản lý lifecycle MCP server
+
+Dùng `connectMcpServers` để kết nối nhiều server, theo dõi lỗi, và đóng tại một nơi:
+
+<Code
+  lang="typescript"
+  code={mcpServersExample}
+  title="Quản lý nhiều MCP server"
+/>
+
+## Lọc tool
+
+Bạn có thể giới hạn tool nào được expose từ mỗi server:
+
+<Code lang="typescript" code={toolFilterExample} title="Lọc tool" />
+
+## Đọc thêm
+
+- [Model Context Protocol](https://modelcontextprotocol.io/) – specification chính thức.
+- [examples/mcp](https://github.com/openai/openai-agents-js/tree/main/examples/mcp) – demo chạy được.

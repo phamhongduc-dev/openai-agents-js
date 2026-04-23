@@ -1,0 +1,54 @@
+---
+title: Human-in-the-loop
+description: Thêm kiểm tra human-in-the-loop cho các lần thực thi agent
+---
+
+import { Aside, Code } from '@astrojs/starlight/components';
+import humanInTheLoopExample from '../../../../../../examples/docs/human-in-the-loop/index.ts?raw';
+import toolApprovalDefinition from '../../../../../../examples/docs/human-in-the-loop/toolApprovalDefinition.ts?raw';
+
+Hướng dẫn này đề cập luồng human-in-the-loop dựa trên approval của SDK. Khi một tool call yêu cầu approval, SDK tạm dừng lần chạy, trả về `interruptions`, và cho phép bạn resume sau từ cùng `RunState`.
+
+Bề mặt approval này là toàn lần chạy, không giới hạn ở agent top-level hiện tại. Cùng mẫu áp dụng khi tool thuộc agent hiện tại, agent đến qua handoff, hoặc execution `agent.asTool()` lồng.
+
+## Luồng approval
+
+Bạn có thể định nghĩa tool yêu cầu approval bằng cách thiết lập tùy chọn `needsApproval` thành `true` hoặc hàm async trả về boolean.
+
+<Code
+  lang="typescript"
+  code={toolApprovalDefinition}
+  title="Định nghĩa tool approval"
+/>
+
+### Luồng
+
+1. Khi tool invocation sắp thực thi, SDK đánh giá rule approval.
+2. Nếu cần approval và chưa có quyết định, tool call không thực thi. Thay vào đó lần chạy ghi lại [`RunToolApprovalItem`](/openai-agents-js/openai/agents/classes/runtoolapprovalitem).
+3. Cuối lượt đó, lần chạy tạm dừng và trả về mọi approval pending trong mảng `interruptions`.
+4. Resolve mỗi item pending bằng `result.state.approve(interruption)` hoặc `result.state.reject(interruption)`. Truyền `{ alwaysApprove: true }` hoặc `{ alwaysReject: true }` nếu cùng tool nên giữ trạng thái cho phần còn lại lần chạy.
+5. Resume bằng cách truyền `result.state` đã cập nhật lại vào `runner.run(agent, state)`.
+
+### Quyết định approval tự động
+
+- `shellTool()` local và `applyPatchTool()` có thể dùng `onApproval` để approve/reject ngay trong code.
+- Hosted MCP tool có thể dùng `requireApproval` cùng `onApproval`.
+- Function tool thông thường dùng luồng interruption thủ công.
+
+### Streaming và session
+
+Cùng luồng interruption hoạt động trong lần chạy streaming. Xem [Human in the loop khi streaming](/openai-agents-js/vi/guides/streaming#human-in-the-loop-khi-streaming).
+
+## Ví dụ
+
+<Code
+  lang="typescript"
+  code={humanInTheLoopExample}
+  title="Human in the loop"
+/>
+
+## Xử lý thời gian approval dài
+
+Luồng human-in-the-loop được thiết kế để có thể interrupt trong thời gian dài. Bạn có thể serialize state bằng `result.state.toString()` và resume sau bằng `RunState.fromString(agent, serializedState)`.
+
+Nếu serialize `RunState`, dùng giá trị `name` duy nhất cho mọi agent trong handoff và `Agent.asTool()` graph.

@@ -1,0 +1,45 @@
+---
+title: Xử lý sự cố
+description: Tìm hiểu cách xử lý sự cố với OpenAI Agents SDK.
+---
+
+## Môi trường được hỗ trợ
+
+OpenAI Agents SDK được hỗ trợ trên các môi trường server sau:
+
+- Node.js 22+
+- Deno 2.35+
+- Bun 1.2.5+
+
+### Hỗ trợ hạn chế
+
+- **Cloudflare Workers**: Agents SDK có thể dùng trong Cloudflare Workers, nhưng hiện có một số hạn chế:
+  - SDK hiện yêu cầu bật `nodejs_compat`
+  - Trace cần được flush thủ công ở cuối request. [Xem hướng dẫn tracing](/openai-agents-js/vi/guides/tracing#export-loop-lifecycle) để biết thêm.
+  - Do hỗ trợ `AsyncLocalStorage` hạn chế của Cloudflare Workers, một số trace có thể không chính xác
+  - Kết nối WebSocket đi ra phải dùng fetch-based upgrade (không phải constructor `WebSocket` toàn cục). Cho Realtime, dùng Cloudflare transport trong `@openai/agents-extensions` (`CloudflareRealtimeTransportLayer`).
+- **Responses API WebSocket transport**:
+  - Yêu cầu implementation `WebSocket` toàn cục.
+  - Implementation `WebSocket` phải hỗ trợ custom header cho handshake.
+  - Nhiều WebSocket API kiểu browser (và một số edge runtime) không hỗ trợ custom outbound header. Trong những môi trường đó, dùng HTTP Responses transport mặc định.
+- **Browser**:
+  - SDK core có thể được bundle cho browser, nhưng tracing bị tắt mặc định ở đó.
+- **v8 isolate**:
+  - Bạn có thể bundle SDK cho v8 isolate nếu dùng bundler với browser polyfill phù hợp, nhưng tracing sẽ không hoạt động.
+  - v8 isolate chưa được test kỹ lưỡng.
+
+## Debug logging
+
+Nếu bạn gặp vấn đề với SDK, bạn có thể bật debug logging để biết thêm thông tin.
+
+Bật debug logging bằng cách thiết lập biến môi trường `DEBUG` thành `openai-agents:*`.
+
+```bash
+DEBUG=openai-agents:*
+```
+
+Ngoài ra, bạn có thể giới hạn debug cho các phần cụ thể của SDK:
+
+- `openai-agents:core` — cho logic thực thi chính của SDK
+- `openai-agents:openai` — cho các lệnh gọi OpenAI API
+- `openai-agents:realtime` — cho các component Realtime Agent

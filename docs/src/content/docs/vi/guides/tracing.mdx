@@ -1,0 +1,84 @@
+---
+title: Tracing
+description: Tìm hiểu cách trace các lần chạy agent
+---
+
+import { Aside, Code } from '@astrojs/starlight/components';
+import customTraceExample from '../../../../../../examples/docs/custom-trace.ts?raw';
+import cloudflareWorkers from '../../../../../../examples/docs/tracing/cloudflareWorkers.ts?raw';
+
+Agents SDK bao gồm tracing tích hợp sẵn, thu thập bản ghi toàn diện về các event trong lần chạy agent: LLM generation, tool call, handoff, guardrail, và cả event tùy chỉnh. Sử dụng [Traces dashboard](https://platform.openai.com/traces), bạn có thể debug, trực quan hóa, và giám sát workflow trong phát triển và production.
+
+<Aside type="note">
+
+Tracing được bật mặc định trong runtime server (Node.js, Deno, Bun). Nó bị tắt mặc định trong browser và khi `NODE_ENV=test`.
+
+Có hai cách tắt tracing trong môi trường server:
+
+1. Tắt tracing toàn cục bằng biến môi trường `OPENAI_AGENTS_DISABLE_TRACING=1`
+2. Tắt tracing trên runner bằng [`RunConfig.tracingDisabled`](/openai-agents-js/openai/agents-core/type-aliases/runconfig/#tracingdisabled) thiết lập thành `true`
+
+**_Cho tổ chức hoạt động theo chính sách Zero Data Retention (ZDR) sử dụng API OpenAI, tracing không khả dụng._**
+
+</Aside>
+
+## Lifecycle vòng lặp export
+
+Trong runtime server hỗ trợ, trace được export theo interval đều đặn. Trong một số runtime, bao gồm Cloudflare Workers, vòng lặp export tự động không khả dụng. Trong các môi trường đó bạn nên gọi `getGlobalTraceProvider().forceFlush()`.
+
+<Code
+  lang="typescript"
+  code={cloudflareWorkers.replace(/\s+\/\/ @ts-expect-error.*$/m, '')}
+  meta="{13}"
+/>
+
+## Trace và span
+
+- **Trace** đại diện cho một operation đầu-cuối của "workflow". Chúng bao gồm các Span.
+  - `workflow_name`: Workflow hoặc ứng dụng logic. Ví dụ "Code generation" hoặc "Customer service".
+  - `trace_id`: ID duy nhất cho trace.
+  - `group_id`: ID nhóm tùy chọn, để liên kết nhiều trace từ cùng cuộc hội thoại.
+- **Span** đại diện cho operation có thời gian bắt đầu và kết thúc.
+
+## Tracing mặc định
+
+Mặc định, SDK trace:
+
+- Toàn bộ `run()` hoặc `Runner.run()` được bọc trong `Trace`.
+- Mỗi lần agent chạy, bọc trong `AgentSpan`
+- LLM generation bọc trong `GenerationSpan`
+- Function tool call bọc trong `FunctionSpan`
+- Guardrail bọc trong `GuardrailSpan`
+- Handoff bọc trong `HandoffSpan`
+
+## Trace cấp cao hơn
+
+Đôi khi bạn muốn nhiều lần gọi `run()` là phần của một trace duy nhất. Bọc code trong `withTrace()`:
+
+<Code lang="typescript" code={customTraceExample} />
+
+## Dữ liệu nhạy cảm
+
+Một số span có thể capture dữ liệu nhạy cảm. Bạn có thể tắt capture bằng [`RunConfig.traceIncludeSensitiveData`](/openai-agents-js/openai/agents-core/type-aliases/runconfig/#traceincludesensitivedata).
+
+## OpenAI tracing exporter
+
+Trong runtime server hỗ trợ, thiết lập tracing mặc định đã export sang OpenAI. Dùng `setTracingExportApiKey()` khi export trace cần credential khác.
+
+## Custom tracing processor
+
+Kiến trúc cấp cao cho tracing:
+
+- Khi khởi tạo, tạo [`TraceProvider`](/openai-agents-js/openai/agents-core/classes/traceprovider) toàn cục.
+- Cấu hình `TraceProvider` với [`BatchTraceProcessor`](/openai-agents-js/openai/agents-core/classes/batchtraceprocessor/) gửi trace/span theo batch tới [`OpenAITracingExporter`](/openai-agents-js/openai/agents-openai/classes/openaitracingexporter/).
+
+Để tùy chỉnh:
+
+1. [`addTraceProcessor()`](/openai-agents-js/openai/agents-core/functions/addtraceprocessor) – thêm processor **bổ sung**.
+2. [`setTraceProcessors()`](/openai-agents-js/openai/agents-core/functions/settraceprocessors) – **thay thế** processor mặc định.
+
+## Danh sách tracing processor bên ngoài
+
+- [AgentOps](https://docs.agentops.ai/v2/usage/typescript-sdk#openai-agents-integration)
+- [Respan](https://www.respan.ai/docs/integrations/openai-agents-sdk)
+- [PromptLayer](https://docs.promptlayer.com/languages/integrations#openai-agents-sdk)

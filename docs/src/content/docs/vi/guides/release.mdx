@@ -1,0 +1,37 @@
+---
+title: Quy trình phát hành
+description: Tìm hiểu cách chúng tôi quản lý version và phát hành SDK cùng các thay đổi gần đây.
+---
+
+## Quản lý version
+
+Dự án tuân theo phiên bản sửa đổi nhẹ của semantic versioning với dạng `0.Y.Z`. Số `0` đầu tiên cho biết SDK vẫn đang phát triển nhanh. Tăng các thành phần như sau:
+
+## Version minor (`Y`)
+
+Chúng tôi sẽ tăng version minor `Y` cho **breaking change** đối với bất kỳ interface public nào không được đánh dấu beta. Ví dụ, từ `0.0.x` lên `0.1.x` có thể bao gồm breaking change.
+
+Nếu bạn không muốn breaking change, chúng tôi khuyến nghị pin version `0.0.x` trong dự án.
+
+## Version patch (`Z`)
+
+Chúng tôi sẽ tăng `Z` cho các thay đổi không breaking:
+
+- Sửa lỗi
+- Tính năng mới
+- Thay đổi interface private
+- Cập nhật tính năng beta
+
+## Quản lý version sub-package
+
+Package chính `@openai/agents` bao gồm nhiều sub-package có thể dùng độc lập. Hiện tại version các package được liên kết, nghĩa là nếu một package tăng version, các package khác cũng tăng. Chúng tôi có thể thay đổi chiến lược này khi chuyển sang `1.0.0`.
+
+## Changelog
+
+Chúng tôi tạo changelog cho mỗi sub-package để giúp hiểu những gì đã thay đổi.
+
+- [`@openai/agents`](https://github.com/openai/openai-agents-js/blob/main/packages/agents/CHANGELOG.md)
+- [`@openai/agents-core`](https://github.com/openai/openai-agents-js/blob/main/packages/agents-core/CHANGELOG.md)
+- [`@openai/agents-extensions`](https://github.com/openai/openai-agents-js/blob/main/packages/agents-extensions/CHANGELOG.md)
+- [`@openai/agents-openai`](https://github.com/openai/openai-agents-js/blob/main/packages/agents-openai/CHANGELOG.md)
+- [`@openai/agents-realtime`](https://github.com/openai/openai-agents-js/blob/main/packages/agents-realtime/CHANGELOG.md)

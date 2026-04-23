@@ -1,0 +1,99 @@
+---
+title: Session
+description: Duy trì lịch sử hội thoại đa lượt để agent có thể resume context xuyên các lần chạy.
+---
+
+import { Code } from '@astrojs/starlight/components';
+import sessionsQuickstart from '../../../../../../examples/docs/sessions/basicSession.ts?raw';
+import manageHistory from '../../../../../../examples/docs/sessions/manageHistory.ts?raw';
+import customSession from '../../../../../../examples/docs/sessions/customSession.ts?raw';
+import sessionInputCallback from '../../../../../../examples/docs/sessions/sessionInputCallback.ts?raw';
+import responsesCompactionSession from '../../../../../../examples/docs/sessions/responsesCompactionSession.ts?raw';
+import manualCompactionSession from '../../../../../../examples/docs/sessions/responsesCompactionManualSession.ts?raw';
+import memorySessionExample from '../../../../../../examples/docs/sessions/memorySession.ts?raw';
+import resumableRunExample from '../../../../../../examples/docs/sessions/resumableRun.ts?raw';
+
+Session cung cấp cho Agents SDK **lớp bộ nhớ lâu dài**. Cung cấp bất kỳ object nào implement interface `Session` cho `Runner.run`, và SDK xử lý phần còn lại. Khi session có mặt, runner tự động:
+
+1. Lấy item hội thoại đã lưu và prepend chúng vào lượt tiếp theo.
+2. Duy trì user input và assistant output mới sau mỗi lần chạy.
+3. Giữ session sẵn sàng cho các lượt tương lai.
+
+SDK đi kèm hai implementation: `OpenAIConversationsSession` cho Conversations API và `MemorySession` cho phát triển local.
+
+## Bắt đầu nhanh
+
+<Code
+  lang="typescript"
+  code={sessionsQuickstart}
+  title="Dùng Conversations API làm session memory"
+/>
+
+Cho demo local, test, hoặc trạng thái chat trong process, `MemorySession` cung cấp cùng interface:
+
+<Code
+  lang="typescript"
+  code={memorySessionExample}
+  title="Dùng MemorySession cho trạng thái local"
+/>
+
+## Hành vi session cốt lõi
+
+### Cách runner dùng session
+
+- **Trước mỗi lần chạy** lấy session history, merge với input lượt mới.
+- **Sau lần chạy không streaming** một lần gọi `session.addItems()` duy trì cả user input và model output.
+- **Cho lần chạy streaming** ghi user input trước và thêm output streaming khi lượt hoàn tất.
+- **Khi resume từ `RunResult.state`** tiếp tục truyền cùng `session`.
+
+### Kiểm tra và chỉnh sửa history
+
+<Code
+  lang="typescript"
+  code={manageHistory}
+  title="Đọc và chỉnh sửa item đã lưu"
+/>
+
+## Storage tùy chỉnh
+
+Implement interface `Session` để backup memory với Redis, DynamoDB, SQLite, hoặc datastore khác:
+
+<Code
+  lang="typescript"
+  code={customSession}
+  title="Implementation session in-memory tùy chỉnh"
+/>
+
+### Kiểm soát cách merge history và item mới
+
+<Code
+  lang="typescript"
+  code={sessionInputCallback}
+  title="Cắt history với sessionInputCallback"
+/>
+
+## Lần chạy có thể resume
+
+<Code
+  lang="typescript"
+  code={resumableRunExample}
+  title="Resume lần chạy với cùng session"
+/>
+
+## Nâng cao: compaction history
+
+`OpenAIResponsesCompactionSession` trang trí bất kỳ `Session` nào và dùng OpenAI Responses API để thay thế history dài bằng danh sách item tương đương ngắn hơn.
+
+<Code
+  lang="typescript"
+  code={responsesCompactionSession}
+  title="Trang trí session với OpenAIResponsesCompactionSession"
+/>
+
+### Compaction thủ công cho streaming độ trễ thấp
+
+<Code
+  lang="typescript"
+  code={manualCompactionSession}
+  title="Tắt auto-compaction và compact giữa các lượt"
+/>

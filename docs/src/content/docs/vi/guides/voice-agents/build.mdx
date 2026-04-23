@@ -1,0 +1,117 @@
+---
+title: Xây dựng Voice Agent
+description: Tìm hiểu cách xây dựng voice agent, cách session hoạt động, và các tính năng realtime có sẵn.
+---
+
+import { Aside, Code } from '@astrojs/starlight/components';
+import multiAgentsExample from '../../../../../../../examples/docs/voice-agents/multiAgents.ts?raw';
+import configureSessionExample from '../../../../../../../examples/docs/voice-agents/configureSession.ts?raw';
+import handleAudioExample from '../../../../../../../examples/docs/voice-agents/handleAudio.ts?raw';
+import defineToolExample from '../../../../../../../examples/docs/voice-agents/defineTool.ts?raw';
+import toolApprovalEventExample from '../../../../../../../examples/docs/voice-agents/toolApprovalEvent.ts?raw';
+import guardrailsExample from '../../../../../../../examples/docs/voice-agents/guardrails.ts?raw';
+import guardrailSettingsExample from '../../../../../../../examples/docs/voice-agents/guardrailSettings.ts?raw';
+import audioInterruptedExample from '../../../../../../../examples/docs/voice-agents/audioInterrupted.ts?raw';
+import sessionInterruptExample from '../../../../../../../examples/docs/voice-agents/sessionInterrupt.ts?raw';
+import updateHistoryExample from '../../../../../../../examples/docs/voice-agents/updateHistory.ts?raw';
+import transportEventsExample from '../../../../../../../examples/docs/voice-agents/transportEvents.ts?raw';
+import toolHistoryExample from '../../../../../../../examples/docs/voice-agents/toolHistory.ts?raw';
+import sendMessageExample from '../../../../../../../examples/docs/voice-agents/sendMessage.ts?raw';
+import addImageExample from '../../../../../../../examples/docs/voice-agents/addImage.ts?raw';
+import serverAgentExample from '../../../../../../../examples/docs/voice-agents/serverAgent.ts?raw';
+import delegationAgentExample from '../../../../../../../examples/docs/voice-agents/delegationAgent.ts?raw';
+import turnDetectionExample from '../../../../../../../examples/docs/voice-agents/turnDetection.ts?raw';
+
+<Aside type="caution">
+
+Chọn kiến trúc sớm:
+
+- `OpenAIRealtimeWebRTC` là đường dễ nhất cho browser, xử lý audio input/output cho bạn.
+- `OpenAIRealtimeWebSocket` cho nhiều control hơn, nhưng bạn phải tự quản lý audio.
+- Function tool chạy ở nơi `RealtimeSession` chạy. Nếu session trong browser, tool cũng chạy trong browser.
+- Realtime handoff giữ cùng live session model. Voice change chỉ hoạt động trước khi session tạo audio output.
+
+</Aside>
+
+## Thiết lập session
+
+### Xử lý audio
+
+Một số transport layer như `OpenAIRealtimeWebRTC` mặc định xử lý audio tự động. Với `OpenAIRealtimeWebSocket` bạn phải tự xử lý:
+
+<Code lang="typescript" code={handleAudioExample} />
+
+### Cấu hình session
+
+<Code lang="typescript" code={configureSessionExample} />
+
+## Luồng tương tác
+
+### Turn detection và voice activity detection
+
+<Code lang="typescript" code={turnDetectionExample} />
+
+Hai chế độ phổ biến:
+
+- `semantic_vad` – ranh giới turn tự nhiên hơn.
+- `server_vad` – dựa trên threshold, expose `threshold`, `prefixPaddingMs`, `silenceDurationMs`, `idleTimeoutMs`.
+
+### Interruption
+
+Khi VAD bật, nói chồng lên agent có thể ngắt response hiện tại.
+
+<Code lang="typescript" code={audioInterruptedExample} />
+
+Nếu muốn nút dừng thủ công:
+
+<Code lang="typescript" code={sessionInterruptExample} />
+
+### Text input
+
+<Code lang="typescript" code={sendMessageExample} />
+
+### Image input
+
+<Code lang="typescript" code={addImageExample} />
+
+## Khả năng Agent
+
+### Handoff
+
+<Code lang="typescript" code={multiAgentsExample} />
+
+Không giống agent thông thường, handoff cho Realtime Agent cập nhật session đang chạy với cấu hình agent mới. Model không thay đổi trong handoff.
+
+### Tool
+
+<Code lang="typescript" code={defineToolExample} />
+
+#### Approval trước thực thi tool
+
+<Code lang="typescript" code={toolApprovalEventExample} />
+
+#### Truy cập lịch sử hội thoại
+
+<Code lang="typescript" code={toolHistoryExample} />
+
+### Guardrail
+
+<Code lang="typescript" code={guardrailsExample} />
+
+<Code lang="typescript" code={guardrailSettingsExample} />
+
+## Trạng thái hội thoại và ủy quyền
+
+### Quản lý lịch sử hội thoại
+
+<Code lang="typescript" code={updateHistoryExample} />
+
+### Ủy quyền qua tool
+
+![Ủy quyền qua tool](https://cdn.openai.com/API/docs/diagram-speech-to-speech-agent-tools.png)
+
+<Code lang="typescript" code={delegationAgentExample} />
+
+Code bên dưới chạy trên server:
+
+<Code lang="typescript" code={serverAgentExample} />

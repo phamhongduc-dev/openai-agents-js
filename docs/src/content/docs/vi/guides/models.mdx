@@ -1,0 +1,105 @@
+---
+title: Model
+description: Chọn và cấu hình language model cho agent
+---
+
+import { Code } from '@astrojs/starlight/components';
+import modelCustomProviderExample from '../../../../../../examples/docs/models/customProviders.ts?raw';
+import setDefaultOpenAIKeyExample from '../../../../../../examples/docs/config/setDefaultOpenAIKey.ts?raw';
+import modelSettingsExample from '../../../../../../examples/docs/models/modelSettings.ts?raw';
+import promptIdExample from '../../../../../../examples/basic/prompt-id.ts?raw';
+import agentWithModelExample from '../../../../../../examples/docs/models/agentWithModel.ts?raw';
+import runnerWithModelExample from '../../../../../../examples/docs/models/runnerWithModel.ts?raw';
+import gpt5DefaultModelSettingsExample from '../../../../../../examples/docs/models/gpt5DefaultModelSettings.ts?raw';
+import setDefaultModelProviderExample from '../../../../../../examples/docs/models/setDefaultModelProvider.ts?raw';
+import setTracingExportApiKeyExample from '../../../../../../examples/docs/config/setTracingExportApiKey.ts?raw';
+import retryExample from '../../../../../../examples/docs/models/retry.ts?raw';
+
+Mọi Agent cuối cùng đều gọi LLM. SDK trừu tượng model qua hai interface nhẹ:
+
+- [`Model`](/openai-agents-js/openai/agents/interfaces/model) – biết cách thực hiện _một_ request tới API cụ thể.
+- [`ModelProvider`](/openai-agents-js/openai/agents/interfaces/modelprovider) – resolve **tên** model dễ đọc (ví dụ `'gpt‑5.4'`) thành instance `Model`.
+
+<Code
+  lang="typescript"
+  code={agentWithModelExample}
+  title="Chỉ định model cho từng agent"
+/>
+
+## Chọn model
+
+### Model mặc định
+
+Khi không chỉ định model cho `Agent`, model mặc định sẽ được dùng. Mặc định hiện tại là [`gpt-4.1`](https://developers.openai.com/api/docs/models/gpt-4.1).
+
+Có hai cách cấu hình model khác:
+
+1. Thiết lập biến môi trường `OPENAI_DEFAULT_MODEL`:
+
+```bash
+export OPENAI_DEFAULT_MODEL=gpt-5.4
+```
+
+2. Thiết lập model mặc định cho `Runner`:
+
+<Code
+  lang="typescript"
+  code={runnerWithModelExample}
+  title="Thiết lập model mặc định cho Runner"
+/>
+
+### ModelSettings
+
+`ModelSettings` phản ánh tham số OpenAI nhưng không phụ thuộc provider.
+
+| Field | Kiểu | Ghi chú |
+| --- | --- | --- |
+| `temperature` | `number` | Sáng tạo vs. xác định. |
+| `topP` | `number` | Nucleus sampling. |
+| `toolChoice` | `'auto' \| 'required' \| 'none' \| string` | Xem [ép dùng tool](/openai-agents-js/vi/guides/agents#forcing-tool-use). |
+| `maxTokens` | `number` | Token tối đa trong response. |
+| `reasoning.effort` | `string` | Mức nỗ lực suy luận cho model gpt-5.x. |
+| `providerData` | `Record<string, any>` | Tùy chọn passthrough dành riêng cho provider. |
+| `retry` | `ModelRetrySettings` | Cấu hình retry opt-in cho runtime. |
+
+<Code lang="typescript" code={modelSettingsExample} title="Model setting" />
+
+### Model retry
+
+Retry là runtime-only và opt-in. SDK không retry request model trừ khi bạn cấu hình `modelSettings.retry`.
+
+<Code lang="typescript" code={retryExample} title="Opt in retry model" />
+
+### Prompt
+
+Agent có thể cấu hình với tham số `prompt`, chỉ định cấu hình prompt lưu trên server. Tùy chọn này chỉ hỗ trợ khi dùng OpenAI Responses API.
+
+<Code lang="typescript" code={promptIdExample} title="Agent với prompt" />
+
+## Provider tùy chỉnh
+
+Implement `ModelProvider` và `Model` rồi truyền provider vào constructor `Runner`:
+
+<Code
+  lang="typescript"
+  code={modelCustomProviderExample}
+  title="Custom provider tối giản"
+/>
+
+Thiết lập provider mặc định toàn cục:
+
+<Code
+  lang="typescript"
+  code={setDefaultModelProviderExample}
+  title="Thiết lập model provider mặc định"
+/>
+
+### Tích hợp AI SDK
+
+Nếu muốn dùng model không phải OpenAI, xem [Dùng model bất kỳ với Vercel AI SDK](/openai-agents-js/vi/extensions/ai-sdk).
+
+## Bước tiếp theo
+
+- Khám phá [chạy agent](/openai-agents-js/vi/guides/running-agents).
+- Cung cấp sức mạnh cho model với [tool](/openai-agents-js/vi/guides/tools).
+- Thêm [guardrail](/openai-agents-js/vi/guides/guardrails) hoặc [tracing](/openai-agents-js/vi/guides/tracing).

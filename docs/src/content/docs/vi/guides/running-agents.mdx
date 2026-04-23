@@ -1,0 +1,113 @@
+---
+title: Chạy Agent
+description: Cấu hình và thực thi workflow agent với class Runner
+---
+
+import { Aside, Code } from '@astrojs/starlight/components';
+import helloWorldWithRunnerExample from '../../../../../../examples/docs/hello-world-with-runner.ts?raw';
+import helloWorldExample from '../../../../../../examples/docs/hello-world.ts?raw';
+import runningAgentsExceptionExample from '../../../../../../examples/docs/running-agents/exceptions1.ts?raw';
+import chatLoopExample from '../../../../../../examples/docs/running-agents/chatLoop.ts?raw';
+import conversationIdExample from '../../../../../../examples/docs/running-agents/conversationId.ts?raw';
+import previousResponseIdExample from '../../../../../../examples/docs/running-agents/previousResponseId.ts?raw';
+
+Agent không tự làm gì cả – bạn **chạy** chúng bằng class `Runner` hoặc tiện ích `run()`.
+
+<Code lang="typescript" code={helloWorldExample} title="Chạy đơn giản" />
+
+Bạn cũng có thể tạo instance runner riêng:
+
+<Code
+  lang="typescript"
+  code={helloWorldWithRunnerExample}
+  title="Chạy đơn giản"
+/>
+
+## Lifecycle và cấu hình Runner
+
+### Agent loop
+
+Khi dùng method run của Runner, bạn truyền agent khởi đầu và input. Runner chạy vòng lặp:
+
+1. Gọi model của agent hiện tại với input hiện tại.
+2. Kiểm tra response LLM:
+   - **Final output** → trả về.
+   - **Handoff** → chuyển sang agent mới, giữ history, quay lại 1.
+   - **Tool call** → thực thi tool, thêm kết quả vào hội thoại, quay lại 1.
+3. Throw [`MaxTurnsExceededError`](/openai-agents-js/openai/agents-core/classes/maxturnsexceedederror) khi đạt `maxTurns`.
+
+### Tham số run
+
+| Tùy chọn | Mặc định | Mô tả |
+| --- | --- | --- |
+| `stream` | `false` | Nếu `true` trả về `StreamedRunResult` và emit event khi nhận. |
+| `context` | – | Object context chuyển tiếp tới mọi tool/guardrail/handoff. |
+| `maxTurns` | `10` | Giới hạn an toàn. |
+| `signal` | – | `AbortSignal` cho hủy bỏ. |
+| `session` | – | Implementation session persistence. Xem [hướng dẫn Session](/openai-agents-js/vi/guides/sessions). |
+| `conversationId` | – | Tái sử dụng hội thoại server-side (Responses API + Conversations API). |
+| `previousResponseId` | – | Tiếp tục từ Responses API call trước. |
+
+## Quản lý trạng thái và hội thoại
+
+### Chọn chiến lược memory
+
+| Chiến lược | Trạng thái ở đâu | Tốt nhất cho | Truyền gì lượt tiếp theo |
+| --- | --- | --- | --- |
+| `result.history` | Memory ứng dụng | Chat loop nhỏ, kiểm soát thủ công hoàn toàn | `result.history` |
+| `session` | Storage của bạn + SDK | Chat state lâu dài, lần chạy có thể resume | Cùng instance `session` |
+| `conversationId` | OpenAI Conversations API | Trạng thái server-side chia sẻ | Cùng `conversationId` + chỉ lượt user mới |
+| `previousResponseId` | OpenAI Responses API | Continuation đơn giản nhất | `result.lastResponseId` + chỉ lượt user mới |
+
+### Hội thoại / chat thread
+
+Mỗi lần gọi `runner.run()` đại diện cho một **lượt** trong hội thoại cấp ứng dụng.
+
+<Code
+  lang="typescript"
+  code={chatLoopExample}
+  title="Ví dụ mang history qua lượt"
+/>
+
+#### Hội thoại quản lý bởi server
+
+##### 1. `conversationId` cho toàn bộ hội thoại
+
+<Code
+  lang="typescript"
+  code={conversationIdExample}
+  title="Tái sử dụng server conversation"
+/>
+
+##### 2. `previousResponseId` để tiếp tục từ lượt trước
+
+<Code
+  lang="typescript"
+  code={previousResponseIdExample}
+  title="Nối chuỗi với previousResponseId"
+/>
+
+## Lỗi và phục hồi
+
+### Exception
+
+SDK throw một tập nhỏ lỗi:
+
+- [`MaxTurnsExceededError`](/openai-agents-js/openai/agents-core/classes/maxturnsexceedederror) – đạt `maxTurns`.
+- [`ModelBehaviorError`](/openai-agents-js/openai/agents-core/classes/modelbehaviorerror) – model sinh output không hợp lệ.
+- [`InputGuardrailTripwireTriggered`](/openai-agents-js/openai/agents-core/classes/inputguardrailtripwiretriggered) / [`OutputGuardrailTripwireTriggered`](/openai-agents-js/openai/agents-core/classes/outputguardrailtripwiretriggered) – vi phạm guardrail.
+- [`UserError`](/openai-agents-js/openai/agents-core/classes/usererror) – lỗi từ cấu hình hoặc input người dùng.
+
+<Code
+  lang="typescript"
+  code={runningAgentsExceptionExample}
+  title="Lỗi thực thi guardrail"
+/>
+
+## Hướng dẫn liên quan
+
+- [Agent](/openai-agents-js/vi/guides/agents) cho định nghĩa agent trước khi chạy.
+- [Kết quả](/openai-agents-js/vi/guides/results) cho `finalOutput`, run item, interruption, và trạng thái resume.
+- [Session](/openai-agents-js/vi/guides/sessions) cho bộ nhớ lâu dài SDK quản lý.
+- [Tool](/openai-agents-js/vi/guides/tools) cho khả năng dùng trong agent loop.
+- [Model](/openai-agents-js/vi/guides/models) cho cấu hình provider và Responses transport.

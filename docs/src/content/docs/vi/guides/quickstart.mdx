@@ -1,0 +1,116 @@
+---
+title: Quickstart
+description: Tạo AI Agent đầu tiên từ đầu
+---
+
+import { Steps } from '@astrojs/starlight/components';
+import { Code } from '@astrojs/starlight/components';
+import quickstartExample from '../../../../../../examples/docs/quickstart/index.ts?raw';
+import createAgentExample from '../../../../../../examples/docs/quickstart/createAgent.ts?raw';
+import runAgentExample from '../../../../../../examples/docs/quickstart/runAgent.ts?raw';
+import agentWithToolsExample from '../../../../../../examples/docs/quickstart/agentWithTools.ts?raw';
+import additionalAgentsExample from '../../../../../../examples/docs/quickstart/additionalAgents.ts?raw';
+import defineHandoffsExample from '../../../../../../examples/docs/quickstart/defineHandoffs.ts?raw';
+import runOrchestrationExample from '../../../../../../examples/docs/quickstart/runOrchestration.ts?raw';
+
+## Thiết lập Project
+
+<Steps>
+
+1. Tạo project và khởi tạo npm. Bạn chỉ cần làm bước này một lần.
+
+   ```bash
+   mkdir my_project
+   cd my_project
+   npm init -y
+   ```
+
+2. Cài đặt Agents SDK và Zod. SDK sử dụng Zod v4 cho tool schema và structured output.
+
+   ```bash
+   npm install @openai/agents zod
+   ```
+
+3. Thiết lập OpenAI API key. Nếu bạn chưa có, hãy theo [hướng dẫn này](https://platform.openai.com/docs/quickstart#create-and-export-an-api-key) để tạo OpenAI API key.
+
+   ```bash
+   export OPENAI_API_KEY=sk-...
+   ```
+
+   Ngoài ra bạn có thể gọi `setDefaultOpenAIKey('<api key>')` để thiết lập key bằng code và dùng `setTracingExportApiKey('<api key>')` cho tracing. Xem [hướng dẫn cấu hình](/openai-agents-js/vi/guides/config) để biết thêm chi tiết.
+
+</Steps>
+
+## Tạo agent đầu tiên
+
+Agent được định nghĩa với instruction và name.
+
+<Code lang="typescript" code={createAgentExample} title="Tạo agent" />
+
+## Chạy agent đầu tiên
+
+Bạn có thể dùng method `run` để chạy agent. Bạn kích hoạt một lần chạy bằng cách truyền vào cả agent bạn muốn bắt đầu và input bạn muốn truyền vào.
+
+Điều này sẽ trả về một kết quả chứa output cuối cùng và bất kỳ hành động nào đã được thực hiện trong lần chạy đó.
+
+<Code lang="typescript" code={runAgentExample} title="Chạy agent" />
+
+Cho lượt thứ hai, bạn có thể truyền `result.history` trở lại vào `run()`, gắn một [session](/openai-agents-js/vi/guides/sessions), hoặc tái sử dụng trạng thái quản lý bởi server OpenAI với `conversationId` / `previousResponseId`. Hướng dẫn [chạy agent](/openai-agents-js/vi/guides/running-agents) so sánh các cách tiếp cận này.
+
+## Cung cấp tool cho agent
+
+Bạn có thể cung cấp cho agent các tool để tra cứu thông tin hoặc thực hiện hành động.
+
+<Code lang="typescript" code={agentWithToolsExample} title="Thêm tool" />
+
+## Thêm một vài agent nữa
+
+Có thể định nghĩa thêm các agent tương tự để chia nhỏ vấn đề và giúp agent tập trung hơn vào tác vụ cụ thể. Điều này cũng cho phép bạn dùng các model khác nhau cho các vấn đề khác nhau bằng cách định nghĩa model trên agent.
+
+<Code
+  lang="typescript"
+  code={additionalAgentsExample}
+  title="Tạo agent chuyên biệt"
+/>
+
+## Định nghĩa handoff
+
+Để điều phối giữa nhiều agent, bạn có thể định nghĩa `handoffs` cho một agent. Điều này sẽ cho phép agent chuyển cuộc hội thoại cho agent tiếp theo. Việc này xảy ra tự động trong quá trình chạy.
+
+<Code
+  lang="typescript"
+  code={defineHandoffsExample}
+  title="Định nghĩa handoff"
+/>
+
+Sau khi chạy, bạn có thể xem agent nào tạo ra response cuối cùng bằng cách nhìn vào property `lastAgent` trên kết quả.
+
+## Chạy điều phối agent
+
+Runner xử lý việc thực thi từng agent, các handoff, và các lệnh gọi tool.
+
+<Code
+  lang="typescript"
+  code={runOrchestrationExample}
+  title="Chạy điều phối agent"
+/>
+
+## Tổng hợp lại
+
+Hãy gộp tất cả lại thành một ví dụ đầy đủ. Đặt code này vào file `index.js` và chạy. Nếu ứng dụng đã được thiết lập cho TypeScript, bạn có thể dùng `index.ts` thay thế.
+
+<Code lang="typescript" code={quickstartExample} title="Quickstart" />
+
+## Xem trace
+
+Agents SDK sẽ tự động sinh trace cho bạn. Điều này cho phép bạn xem lại cách agent hoạt động, tool nào chúng đã gọi hoặc agent nào chúng đã handoff tới.
+
+Để xem lại những gì đã xảy ra trong lần chạy agent, truy cập [Trace viewer trên OpenAI Dashboard](https://platform.openai.com/traces).
+
+## Bước tiếp theo
+
+Tìm hiểu cách xây dựng luồng agent phức tạp hơn:
+
+- Tìm hiểu về cấu hình [Agent](/openai-agents-js/vi/guides/agents).
+- Tìm hiểu về [chạy agent](/openai-agents-js/vi/guides/running-agents) và [session](/openai-agents-js/vi/guides/sessions).
+- Tìm hiểu về [tool](/openai-agents-js/vi/guides/tools), [guardrail](/openai-agents-js/vi/guides/guardrails), và [model](/openai-agents-js/vi/guides/models).

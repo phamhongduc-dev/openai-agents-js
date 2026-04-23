@@ -1,0 +1,67 @@
+---
+title: Realtime Agent trên Twilio
+description: Chạy voice agent Agents SDK qua cuộc gọi điện thoại Twilio
+---
+
+import { Aside, Steps, Code } from '@astrojs/starlight/components';
+import twilioBasicExample from '../../../../../../examples/docs/extensions/twilio-basic.ts?raw';
+import twilioServerExample from '../../../../../../examples/realtime-twilio/index.ts?raw';
+
+Twilio cung cấp [Media Streams API](https://www.twilio.com/docs/voice/media-streams) gửi raw audio từ cuộc gọi điện thoại tới WebSocket server. Thiết lập này có thể dùng để kết nối [voice agent](/openai-agents-js/vi/guides/voice-agents) với Twilio.
+
+Để cải thiện trải nghiệm thiết lập, chúng tôi đã tạo transport layer chuyên dụng xử lý kết nối với Twilio, bao gồm xử lý interruption và audio forwarding.
+
+<Aside type="caution">
+  Adapter này vẫn ở beta. Bạn có thể gặp edge case issue hoặc bug. Hãy báo cáo
+  qua [GitHub issues](https://github.com/openai/openai-agents-js/issues).
+</Aside>
+
+## Thiết lập
+
+<Steps>
+
+1. **Đảm bảo bạn có tài khoản Twilio và số điện thoại Twilio.**
+
+2. **Thiết lập WebSocket server có thể nhận event từ Twilio.**
+
+   Nếu phát triển local, bạn cần cấu hình tunnel local như [`ngrok`](https://ngrok.io/) hoặc [Cloudflare Tunnel](https://developers.cloudflare.com/pages/how-to/preview-with-cloudflare-tunnel/).
+
+3. **Cài đặt Twilio adapter:**
+
+   ```bash
+   npm install @openai/agents-extensions
+   ```
+
+4. **Import adapter và kết nối với `RealtimeSession`:**
+
+   <Code
+     lang="typescript"
+     code={twilioBasicExample.replace(
+       /\n\s+\/\/ @ts-expect-error - this is not defined/g,
+       '',
+     )}
+   />
+
+5. **Kết nối `RealtimeSession` với Twilio:**
+
+   ```typescript
+   session.connect({ apiKey: 'your-openai-api-key' });
+   ```
+
+</Steps>
+
+Mọi event và hành vi từ `RealtimeSession` đều hoạt động bình thường bao gồm tool call, guardrail, và nhiều hơn.
+
+## Mẹo và cân nhắc
+
+1. **Tốc độ là yếu tố quan trọng.** Tạo `TwilioRealtimeTransportLayer` ngay khi có reference WebSocket và gọi `session.connect()` ngay sau đó.
+2. **Truy cập raw Twilio event.** Lắng nghe event `transport_event` trên `RealtimeSession`. Mọi event từ Twilio có type `twilio_message`.
+3. **Xem debug log.** Dùng `DEBUG=openai-agents*` hoặc `DEBUG=openai-agents:extensions:twilio*`.
+
+## Ví dụ server đầy đủ
+
+<Code
+  lang="typescript"
+  code={twilioServerExample}
+  title="Server ví dụ dùng Fastify"
+/>

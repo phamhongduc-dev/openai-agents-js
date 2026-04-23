@@ -87,7 +87,7 @@ const plugins = [
         paths: ['api/**'],
       },
     ],
-    exclude: ['ja/**', 'zh/**', 'ko/**'],
+    exclude: ['ja/**', 'zh/**', 'ko/**', 'vi/**'],
   }),
 ];
 
@@ -99,6 +99,7 @@ const sidebar = [
       ja: '概要',
       zh: '概述',
       ko: '개요',
+      vi: 'Tổng quan',
     },
   },
   {
@@ -108,6 +109,7 @@ const sidebar = [
       ja: 'クイックスタート',
       zh: '快速开始',
       ko: '빠른 시작',
+      vi: 'Bắt đầu nhanh',
     },
   },
   {
@@ -117,6 +119,7 @@ const sidebar = [
       ja: 'SDK の設定',
       zh: 'SDK 配置',
       ko: 'SDK 설정',
+      vi: 'Cấu hình SDK',
     },
   },
   {
@@ -125,6 +128,7 @@ const sidebar = [
       ja: 'ガイド',
       zh: '指南',
       ko: '가이드',
+      vi: 'Hướng dẫn',
     },
     items: [
       {
@@ -134,6 +138,7 @@ const sidebar = [
           ja: 'エージェント',
           zh: '智能体',
           ko: '에이전트',
+          vi: 'Agent',
         },
       },
       {
@@ -143,6 +148,7 @@ const sidebar = [
           ja: 'モデル',
           zh: '模型',
           ko: '모델',
+          vi: 'Model',
         },
       },
       {
@@ -152,6 +158,7 @@ const sidebar = [
           ja: 'ツール',
           zh: '工具',
           ko: '도구',
+          vi: 'Tool',
         },
       },
       {
@@ -161,6 +168,7 @@ const sidebar = [
           ja: 'ガードレール',
           zh: '护栏',
           ko: '가드레일',
+          vi: 'Guardrail',
         },
       },
       {
@@ -170,6 +178,7 @@ const sidebar = [
           ja: 'エージェントの実行',
           zh: '运行智能体',
           ko: '에이전트 실행',
+          vi: 'Chạy Agent',
         },
       },
       {
@@ -179,6 +188,7 @@ const sidebar = [
           ja: 'ストリーミング',
           zh: '流式传输',
           ko: '스트리밍',
+          vi: 'Streaming',
         },
       },
       {
@@ -188,6 +198,7 @@ const sidebar = [
           ja: 'エージェントオーケストレーション',
           zh: '智能体编排',
           ko: '에이전트 오케스트레이션',
+          vi: 'Điều phối Agent',
         },
       },
       {
@@ -197,6 +208,7 @@ const sidebar = [
           ja: 'ハンドオフ',
           zh: '交接',
           ko: '핸드오프',
+          vi: 'Handoff',
         },
       },
       {
@@ -206,6 +218,7 @@ const sidebar = [
           ja: 'エージェントの実行結果',
           zh: '执行结果',
           ko: '실행 결과',
+          vi: 'Kết quả',
         },
       },
       {
@@ -215,6 +228,7 @@ const sidebar = [
           ja: '人間の介入（HITL）',
           zh: '人机协作',
           ko: '휴먼 인 더 루프 (HITL)',
+          vi: 'Human-in-the-loop',
         },
       },
       {
@@ -224,6 +238,7 @@ const sidebar = [
           ja: 'セッション',
           zh: '会话',
           ko: '세션',
+          vi: 'Session',
         },
       },
       {
@@ -233,6 +248,7 @@ const sidebar = [
           ja: 'コンテキスト管理',
           zh: '上下文管理',
           ko: '컨텍스트 관리',
+          vi: 'Quản lý Context',
         },
       },
       {
@@ -242,6 +258,7 @@ const sidebar = [
           ja: 'MCP 連携',
           zh: 'MCP 集成',
           ko: '모델 컨텍스트 프로토콜 (MCP)',
+          vi: 'Model Context Protocol (MCP)',
         },
       },
       {
@@ -251,6 +268,7 @@ const sidebar = [
           ja: 'トレーシング',
           zh: '追踪',
           ko: '트레이싱',
+          vi: 'Tracing',
         },
       },
     ],
@@ -261,6 +279,7 @@ const sidebar = [
       ja: '音声エージェント',
       zh: '语音智能体',
       ko: '음성 에이전트',
+      vi: 'Voice Agent',
     },
     items: [
       {
@@ -270,6 +289,7 @@ const sidebar = [
           ja: '音声エージェントの概要',
           zh: '语音智能体概述',
           ko: '음성 에이전트 개요',
+          vi: 'Tổng quan',
         },
       },
       {
@@ -279,6 +299,7 @@ const sidebar = [
           ja: 'クイックスタート',
           zh: '快速开始',
           ko: '빠른 시작',
+          vi: 'Bắt đầu nhanh',
         },
       },
       {
@@ -288,6 +309,7 @@ const sidebar = [
           ja: '音声エージェントの構築',
           zh: '构建语音智能体',
           ko: '음성 에이전트 구축',
+          vi: 'Xây dựng Voice Agent',
         },
       },
       {
@@ -297,6 +319,7 @@ const sidebar = [
           ja: 'リアルタイムトランスポート',
           zh: '传输机制',
           ko: '전송 방식',
+          vi: 'Cơ chế Transport',
         },
       },
     ],
@@ -307,6 +330,7 @@ const sidebar = [
       ja: '拡張機能',
       zh: '扩展',
       ko: '확장 기능',
+      vi: 'Extension',
     },
     items: [
       {
@@ -316,6 +340,7 @@ const sidebar = [
           ja: 'AI SDK 連携',
           zh: 'AI SDK 集成',
           ko: 'AI SDK 연동',
+          vi: 'Tích hợp AI SDK',
         },
       },
       {
@@ -325,6 +350,7 @@ const sidebar = [
           ja: 'Twilio 上の Realtime Agent',
           zh: 'Twilio 上的实时智能体',
           ko: 'Twilio용 Realtime 에이전트',
+          vi: 'Realtime Agent trên Twilio',
         },
       },
       {
@@ -334,6 +360,7 @@ const sidebar = [
           ja: 'Cloudflare 上の Realtime Agent',
           zh: 'Cloudflare 上的实时智能体',
           ko: 'Cloudflare용 Realtime 에이전트',
+          vi: 'Realtime Agent trên Cloudflare',
         },
       },
     ],
@@ -345,6 +372,7 @@ const sidebar = [
       ja: 'トラブルシューティング',
       zh: '故障排除',
       ko: '문제 해결',
+      vi: 'Xử lý sự cố',
     },
   },
   {
@@ -353,6 +381,7 @@ const sidebar = [
       ja: 'APIリファレンス',
       zh: 'API 参考',
       ko: 'API 레퍼런스',
+      vi: 'API Reference',
     },
     collapsed: false,
     items: [
@@ -395,6 +424,7 @@ const sidebar = [
       ja: 'リリースプロセス',
       zh: '发布流程',
       ko: '릴리스 프로세스',
+      vi: 'Quy trình phát hành',
     },
   },
 ];
@@ -431,6 +461,10 @@ export default defineConfig({
         ko: {
           label: '한국어',
           lang: 'ko',
+        },
+        vi: {
+          label: 'Tiếng Việt',
+          lang: 'vi',
         },
       },
       social: [

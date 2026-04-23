@@ -1,0 +1,112 @@
+---
+title: Tích hợp AI SDK
+description: Kết nối agent Agents SDK với bất kỳ model nào thông qua AI SDK của Vercel
+---
+
+import { Steps, Code } from '@astrojs/starlight/components';
+import aiSdkImportsExample from '../../../../../../examples/docs/extensions/ai-sdk-imports.ts?raw';
+import aiSdkModelExample from '../../../../../../examples/docs/extensions/ai-sdk-model.ts?raw';
+import aiSdkProviderDataExample from '../../../../../../examples/docs/extensions/ai-sdk-providerData.ts?raw';
+import aiSdkProviderMetadataExample from '../../../../../../examples/docs/extensions/ai-sdk-providerMetadata.ts?raw';
+import aiSdkSetupExample from '../../../../../../examples/docs/extensions/ai-sdk-setup.ts?raw';
+import aiSdkTransformOutputTextExample from '../../../../../../examples/docs/extensions/ai-sdk-transform-output-text.ts?raw';
+import aiSdkUiMessageStreamExample from '../../../../../../examples/docs/extensions/ai-sdk-ui-message-stream.ts?raw';
+import aiSdkUiMessageStreamResponseExample from '../../../../../../examples/docs/extensions/ai-sdk-ui-message-stream-response.ts?raw';
+import aiSdkTextStreamResponseExample from '../../../../../../examples/docs/extensions/ai-sdk-text-stream-response.ts?raw';
+
+Mặc định Agents SDK hoạt động với model OpenAI qua Responses API hoặc Chat Completions API. Tuy nhiên, nếu bạn muốn dùng model khác, [Vercel AI SDK](https://sdk.vercel.ai/) cung cấp nhiều model được hỗ trợ có thể đưa vào Agents SDK qua adapter này.
+
+## Thiết lập
+
+<Steps>
+
+1. Cài đặt AI SDK adapter bằng cách cài extensions package:
+
+   ```bash
+   npm install @openai/agents-extensions
+   ```
+
+2. Chọn model package mong muốn từ [Vercel's AI SDK](https://ai-sdk.dev/docs/foundations/providers-and-models) và cài đặt:
+
+   ```bash
+   npm install @ai-sdk/openai
+   ```
+
+3. Import adapter và model để kết nối với agent:
+
+   <Code lang="typescript" code={aiSdkImportsExample} title="Import adapter" />
+
+4. Khởi tạo instance model để agent sử dụng:
+
+   <Code lang="typescript" code={aiSdkModelExample} title="Tạo model" />
+
+</Steps>
+
+## Ví dụ code
+
+<Code lang="typescript" code={aiSdkSetupExample} title="AI SDK Setup" />
+
+## Truyền provider metadata
+
+Nếu cần gửi option dành riêng cho provider cùng message, truyền qua `providerMetadata`:
+
+<Code
+  lang="typescript"
+  code={aiSdkProviderDataExample}
+  title="Agents SDK providerData"
+/>
+
+sẽ trở thành
+
+<Code
+  lang="typescript"
+  code={aiSdkProviderMetadataExample}
+  title="AI SDK providerMetadata"
+/>
+
+## Chuẩn hóa output text
+
+Một số provider trả structured output dưới dạng text thô với bọc thêm, ví dụ JSON code fence. Truyền `transformOutputText` khi tạo adapter:
+
+<Code
+  lang="typescript"
+  code={aiSdkTransformOutputTextExample}
+  title="Chuẩn hóa output text"
+/>
+
+## Retry
+
+`modelSettings.retry` hoạt động với model dựa trên AI SDK, vì retry được implement bởi Agents runtime.
+
+## Chọn đúng integration
+
+Có hai integration liên quan trong `@openai/agents-extensions`:
+
+- `@openai/agents-extensions/ai-sdk` adapt model AI SDK để `Agent` chạy trên đó.
+- `@openai/agents-extensions/ai-sdk-ui` adapt streamed Agents SDK run để AI SDK UI route trả về streaming `Response` chuẩn.
+
+### Lưu ý cho model AI SDK
+
+- Adapter `@openai/agents-extensions/ai-sdk` vẫn ở beta.
+- Nếu dùng model OpenAI, ưu tiên default OpenAI model provider.
+- Provider AI SDK phải expose `specificationVersion` `v2` hoặc `v3`.
+
+## AI SDK UI stream helper
+
+<Code
+  lang="typescript"
+  code={aiSdkUiMessageStreamExample}
+  title="UI message stream"
+/>
+
+<Code
+  lang="typescript"
+  code={aiSdkUiMessageStreamResponseExample}
+  title="UI message stream response"
+/>
+
+<Code
+  lang="typescript"
+  code={aiSdkTextStreamResponseExample}
+  title="Text stream response"
+/>

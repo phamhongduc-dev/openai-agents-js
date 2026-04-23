@@ -1,0 +1,65 @@
+---
+title: Voice Agent
+description: Xây dựng trợ lý giọng nói realtime bằng RealtimeAgent và RealtimeSession
+---
+
+import { Aside, LinkCard } from '@astrojs/starlight/components';
+
+## Tổng quan
+
+![Realtime Agents](https://cdn.openai.com/API/docs/images/diagram-speech-to-speech.png)
+
+Voice Agent cho phép bạn xây dựng giao diện nói chuyện độ trễ thấp trên các model speech-to-speech của OpenAI. SDK giữ nguyên mental model của Realtime API, nhưng bọc luồng event thô trong `RealtimeAgent`, `RealtimeSession`, và các helper transport giúp tool, guardrail, handoff, và lịch sử session dễ làm việc hơn.
+
+Bên dưới, các khái niệm Realtime từ các hướng dẫn chính thức [Realtime API với WebRTC](https://developers.openai.com/api/docs/guides/realtime-webrtc/), [Realtime conversation](https://developers.openai.com/api/docs/guides/realtime-conversations/), và [voice activity detection](https://developers.openai.com/api/docs/guides/realtime-vad/) vẫn áp dụng.
+
+<Aside type="note">
+  Bắt đầu với Quickstart nếu bạn kết nối browser client với WebRTC. Chuyển tới
+  hướng dẫn transport trước nếu bạn đang quyết định giữa WebRTC, WebSocket, SIP,
+  Twilio, hoặc Cloudflare Workers.
+</Aside>
+
+## Bắt đầu từ đây
+
+<LinkCard
+  title="Voice Agents Quickstart"
+  href="/openai-agents-js/vi/guides/voice-agents/quickstart"
+  description="Xây dựng trợ lý giọng nói realtime đầu tiên bằng OpenAI Agents SDK trong vài phút."
+/>
+
+<LinkCard
+  title="Xây dựng Voice Agent"
+  href="/openai-agents-js/vi/guides/voice-agents/build"
+  description="Tìm hiểu cách session lifecycle, VAD, interruption, multimodal input, tool, và history hoạt động trong SDK."
+/>
+
+<LinkCard
+  title="Realtime Transport Layer"
+  href="/openai-agents-js/vi/guides/voice-agents/transport"
+  description="Chọn giữa WebRTC, WebSocket, SIP, hoặc transport tùy chỉnh."
+/>
+
+## SDK bổ sung gì
+
+- Thiết lập WebRTC browser-first với ephemeral client token.
+- Tùy chọn WebSocket và SIP transport phía server.
+- Xử lý interruption tự động và cập nhật lịch sử hội thoại local.
+- Điều phối đa agent qua realtime handoff.
+- Function tool, hosted MCP tool, approval, và mẫu ủy quyền.
+- Output guardrail và hỗ trợ tracing cho tương tác nói realtime.
+
+## Chọn trang tiếp theo
+
+| Nếu bạn cần... | Tới đây |
+| --- | --- |
+| Kết nối browser client an toàn với WebRTC và ephemeral token | [Voice Agents Quickstart](/openai-agents-js/vi/guides/voice-agents/quickstart) |
+| Hiểu session lifecycle, VAD, interruption, image input, tool, và history | [Xây dựng Voice Agent](/openai-agents-js/vi/guides/voice-agents/build) |
+| Quyết định giữa WebRTC, WebSocket, SIP, và transport tùy chỉnh | [Realtime Transport Layer](/openai-agents-js/vi/guides/voice-agents/transport) |
+| Chạy trải nghiệm điện thoại trên Twilio | [Realtime Agent trên Twilio](/openai-agents-js/vi/extensions/twilio) |
+| Kết nối từ Cloudflare Workers | [Realtime Agent trên Cloudflare](/openai-agents-js/vi/extensions/cloudflare) |
+
+## Tại sao speech-to-speech
+
+Model speech-to-speech xử lý audio người dùng trực tiếp, nên bạn không cần xây dựng chuỗi speech-to-text, text reasoning, và text-to-speech riêng biệt cho mỗi lượt. Điều này giữ độ trễ thấp và làm cho interruption, input kết hợp text và voice, và lệnh gọi tool tự nhiên hơn trong ứng dụng realtime.
+
+![Speech-to-speech model](https://cdn.openai.com/API/docs/images/diagram-chained-agent.png)

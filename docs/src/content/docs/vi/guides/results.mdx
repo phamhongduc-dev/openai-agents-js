@@ -1,0 +1,66 @@
+---
+title: Kết quả
+description: Tìm hiểu cách truy cập kết quả và output từ lần chạy agent
+---
+
+import { Code } from '@astrojs/starlight/components';
+import handoffFinalOutputTypes from '../../../../../../examples/docs/results/handoffFinalOutputTypes.ts?raw';
+import historyLoop from '../../../../../../examples/docs/results/historyLoop.ts?raw';
+import usageExample from '../../../../../../examples/docs/results/usage.ts?raw';
+
+Khi bạn [chạy agent](/openai-agents-js/vi/guides/running-agents), bạn sẽ nhận:
+
+- [`RunResult`](/openai-agents-js/openai/agents/classes/runresult) nếu gọi `run` không có `stream: true`
+- [`StreamedRunResult`](/openai-agents-js/openai/agents/classes/streamedrunresult) nếu gọi `run` với `stream: true`
+
+## Chọn đúng bề mặt kết quả
+
+| Nếu bạn cần... | Dùng |
+| --- | --- |
+| Câu trả lời cuối cùng hiển thị cho người dùng | `finalOutput` |
+| Input replay-ready cho lượt tiếp theo | `history` |
+| Chỉ các item model-shaped mới từ lần chạy này | `output` |
+| Run item phong phú với metadata agent/tool/handoff | `newItems` |
+| Agent nên xử lý lượt user tiếp theo | `lastAgent` hoặc `activeAgent` |
+| Nối chuỗi Responses API với `previousResponseId` | `lastResponseId` |
+| Phê duyệt pending và snapshot có thể resume | `interruptions` và `state` |
+
+## Final output
+
+Property `finalOutput` chứa output cuối cùng của agent cuối cùng chạy:
+
+- `string` — mặc định cho agent không có `outputType`
+- `unknown` — nếu agent có JSON schema output type
+- `z.infer<outputType>` — nếu agent có Zod schema output type
+- `undefined` — nếu agent chưa tạo output
+
+Nếu dùng handoff với output type khác nhau, dùng `Agent.create()` thay vì `new Agent()`:
+
+<Code
+  lang="typescript"
+  code={handoffFinalOutputTypes}
+  title="Handoff final output type"
+/>
+
+## Các bề mặt input và output
+
+| Property | Chứa gì | Tốt nhất cho |
+| --- | --- | --- |
+| `input` | Base input cho lần chạy này | Kiểm toán input thực tế |
+| `output` | Chỉ item model-shaped mới | Lưu trữ hoặc replay delta mới |
+| `newItems` | [`RunItem`](/openai-agents-js/openai/agents/type-aliases/runitem) với metadata phong phú | Log, UI, debug |
+| `history` | Input replay-ready từ `input + newItems` | Chat loop thủ công |
+
+<Code lang="typescript" code={historyLoop} title="History loop" />
+
+## Interruption và trạng thái có thể resume
+
+Nếu tool cần phê duyệt, lần chạy tạm dừng và `interruptions` chứa các [`RunToolApprovalItem`](/openai-agents-js/openai/agents/classes/runtoolapprovalitem) pending.
+
+Resolve phê duyệt qua `result.state.approve(...)` / `result.state.reject(...)`, rồi truyền cùng `state` lại vào `run()` để resume.
+
+## Usage
+
+Token usage được tổng hợp trong `result.state.usage`.
+
+<Code lang="typescript" code={usageExample} title="Đọc usage từ RunState" />

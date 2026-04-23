@@ -1,0 +1,117 @@
+---
+title: Cấu hình
+description: Cấu hình OpenAI client, transport, tracing và logging mặc định cho toàn bộ process
+---
+
+import { Code } from '@astrojs/starlight/components';
+import setDefaultOpenAIKeyExample from '../../../../../../examples/docs/config/setDefaultOpenAIKey.ts?raw';
+import setDefaultOpenAIClientExample from '../../../../../../examples/docs/config/setDefaultOpenAIClient.ts?raw';
+import setOpenAIAPIExample from '../../../../../../examples/docs/config/setOpenAIAPI.ts?raw';
+import setOpenAIResponsesTransportExample from '../../../../../../examples/docs/config/setOpenAIResponsesTransport.ts?raw';
+import setTracingExportApiKeyExample from '../../../../../../examples/docs/config/setTracingExportApiKey.ts?raw';
+import setTracingDisabledExample from '../../../../../../examples/docs/config/setTracingDisabled.ts?raw';
+import getLoggerExample from '../../../../../../examples/docs/config/getLogger.ts?raw';
+
+Trang này đề cập **các giá trị mặc định toàn SDK** mà bạn thường thiết lập một lần khi khởi động ứng dụng, như OpenAI client mặc định, transport, tracing export key, và hành vi debug logging. Các thiết lập này áp dụng cho toàn bộ process theo mặc định, nên đây là nơi phù hợp cho cấu hình chung thay vì tinh chỉnh cho từng agent hoặc từng lần chạy.
+
+Nếu bạn cần cấu hình cho một `Agent`, `Runner`, hoặc lệnh gọi `run()` cụ thể, hãy xem:
+
+- [Chạy Agent](/openai-agents-js/vi/guides/running-agents) cho `Runner` và các tùy chọn theo lần chạy.
+- [Model](/openai-agents-js/vi/guides/models) cho cài đặt model ở cấp agent và runner.
+- [Tracing](/openai-agents-js/vi/guides/tracing) cho cấu hình tracing theo lần chạy và hành vi exporter.
+
+## OpenAI client và transport
+
+### API key và client
+
+Mặc định, SDK sẽ resolve `OPENAI_API_KEY` một cách lazy khi cần tạo OpenAI client. Nếu không thể thiết lập biến môi trường, hãy gọi `setDefaultOpenAIKey()` thủ công.
+
+<Code
+  lang="typescript"
+  code={setDefaultOpenAIKeyExample}
+  title="Thiết lập OpenAI key mặc định"
+/>
+
+Bạn cũng có thể truyền instance `OpenAI` client của riêng mình. Nếu không, SDK sẽ tự động tạo một instance bằng key mặc định.
+
+<Code
+  lang="typescript"
+  code={setDefaultOpenAIClientExample}
+  title="Thiết lập OpenAI client mặc định"
+/>
+
+### Chọn API
+
+Cuối cùng, bạn có thể chuyển đổi giữa Responses API và Chat Completions API.
+
+<Code
+  lang="typescript"
+  code={setOpenAIAPIExample}
+  title="Thiết lập OpenAI API"
+/>
+
+### Responses transport
+
+Nếu bạn đang dùng Responses API, bạn cũng có thể chọn transport của OpenAI provider. Mặc định là HTTP.
+
+<Code
+  lang="typescript"
+  code={setOpenAIResponsesTransportExample}
+  title="Thiết lập Responses transport"
+/>
+
+Dùng `setOpenAIResponsesTransport('websocket')` để bật WebSocket transport và `setOpenAIResponsesTransport('http')` để chuyển lại. Nếu bạn định tuyến websocket traffic qua proxy hoặc gateway, hãy thiết lập `OPENAI_WEBSOCKET_BASE_URL` (hoặc cấu hình `websocketBaseURL` trên `OpenAIProvider` của bạn).
+
+Giá trị mặc định toàn process này chỉ ảnh hưởng đến các model được resolve qua OpenAI provider mặc định sau đó. Nếu bạn truyền instance `Model` cụ thể hoặc `modelProvider` tùy chỉnh, hãy cấu hình transport ở đó. Xem [hướng dẫn Model](/openai-agents-js/vi/guides/models#responses-websocket-transport).
+
+## Khả năng quan sát và debug
+
+### Tracing
+
+Tracing được bật mặc định trong các runtime server được hỗ trợ. Nó bị tắt mặc định trong browser và khi `NODE_ENV=test`.
+
+Mặc định, tracing export dùng cùng OpenAI key từ phần trên.
+
+Có thể thiết lập key riêng qua `setTracingExportApiKey()`:
+
+<Code
+  lang="typescript"
+  code={setTracingExportApiKeyExample}
+  title="Thiết lập tracing export API key"
+/>
+
+Tracing cũng có thể bị tắt hoàn toàn:
+
+<Code lang="typescript" code={setTracingDisabledExample} title="Tắt tracing" />
+
+Nếu bạn muốn tìm hiểu thêm về tính năng tracing, vui lòng xem [hướng dẫn Tracing](/openai-agents-js/vi/guides/tracing).
+
+### Debug logging
+
+SDK sử dụng package [`debug`](https://www.npmjs.com/package/debug) cho debug logging. Thiết lập biến môi trường `DEBUG` thành `openai-agents*` để xem log chi tiết.
+
+```bash
+export DEBUG=openai-agents*
+```
+
+Để log hoạt động lưu session, thiết lập `OPENAI_AGENTS__DEBUG_SAVE_SESSION=1`.
+
+Bạn có thể lấy namespaced logger cho module riêng bằng `getLogger(namespace)` từ `@openai/agents`.
+
+<Code lang="typescript" code={getLoggerExample} title="Lấy logger" />
+
+#### Dữ liệu nhạy cảm trong log
+
+Một số log có thể chứa dữ liệu người dùng. Hãy tắt chúng bằng các biến môi trường sau.
+
+Để tắt logging input và output của LLM:
+
+```bash
+export OPENAI_AGENTS_DONT_LOG_MODEL_DATA=1
+```
+
+Để tắt logging input và output của tool:
+
+```bash
+export OPENAI_AGENTS_DONT_LOG_TOOL_DATA=1
+```

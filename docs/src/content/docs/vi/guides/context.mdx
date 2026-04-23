@@ -1,0 +1,53 @@
+---
+title: Quản lý Context
+description: Tìm hiểu cách cung cấp dữ liệu local qua RunContext và expose context cho LLM
+---
+
+import { Aside, Code } from '@astrojs/starlight/components';
+import localContextExample from '../../../../../../examples/docs/context/localContext.ts?raw';
+
+Context là thuật ngữ có nhiều nghĩa. Có hai loại context chính:
+
+1. **Local context** mà code có thể truy cập trong lần chạy: dependency hoặc dữ liệu cần cho tool, callback như `onHandoff`, và lifecycle hook.
+2. **Agent/LLM context** mà language model thấy khi sinh response.
+
+## Local context
+
+Local context được biểu diễn bởi kiểu `RunContext<T>`. Bạn tạo object bất kỳ để chứa trạng thái hoặc dependency và truyền vào `Runner.run()`. Tất cả lệnh gọi tool và hook đều nhận wrapper `RunContext`.
+
+<Code
+  lang="typescript"
+  code={localContextExample}
+  title="Ví dụ local context"
+/>
+
+Mọi agent, tool và hook tham gia cùng một lần chạy phải dùng cùng **kiểu** context.
+
+Dùng local context cho: dữ liệu về lần chạy (tên người dùng, ID...), dependency (logger, data fetcher), hàm trợ giúp.
+
+<Aside type="note">
+  Object context **không** được gửi tới LLM. Nó hoàn toàn là local.
+</Aside>
+
+### RunContext cung cấp gì
+
+- `runContext.context` cho trạng thái ứng dụng có thể thay đổi.
+- `runContext.usage` cho lượng token/request tổng hợp.
+- `runContext.toolInput` cho structured input khi thực thi bên trong `agent.asTool()`.
+- `runContext.approveTool(...)` / `runContext.rejectTool(...)` khi cần cập nhật approval bằng code.
+
+<Aside type="note">
+  `RunContext` là về trạng thái ứng dụng local. Trạng thái cuộc hội thoại là vấn
+  đề riêng: dùng `result.history`, `session`, `conversationId`, hoặc
+  `previousResponseId`. Xem [Chạy
+  Agent](/openai-agents-js/vi/guides/running-agents#state-and-conversation-management).
+</Aside>
+
+## Agent/LLM context
+
+Khi LLM được gọi, dữ liệu duy nhất nó thấy đến từ lịch sử hội thoại. Để cung cấp thêm thông tin:
+
+1. Thêm vào Agent `instructions` – system/developer message. Có thể là string tĩnh hoặc function.
+2. Đưa vào `input` khi gọi `Runner.run()`.
+3. Expose qua function tool để LLM lấy dữ liệu theo yêu cầu.
+4. Dùng retrieval hoặc web search tool để đặt nền cho response.

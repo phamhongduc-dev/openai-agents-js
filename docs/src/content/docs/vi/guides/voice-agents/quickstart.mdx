@@ -1,0 +1,118 @@
+---
+title: Voice Agents Quickstart
+description: Xây dựng trợ lý giọng nói realtime đầu tiên bằng OpenAI Agents SDK trong vài phút.
+---
+
+import { Steps, Aside, Code } from '@astrojs/starlight/components';
+import helloWorldExample from '../../../../../../../examples/docs/voice-agents/helloWorld.ts?raw';
+
+<Aside type="note">
+  Quickstart này dùng `@openai/agents`, là mặc định khuyến nghị cho hầu hết ứng
+  dụng. Nếu bạn thích package Realtime độc lập, cài `@openai/agents-realtime` và
+  thay import từ `@openai/agents/realtime` bằng `@openai/agents-realtime`.
+</Aside>
+
+## Thiết lập project và thông tin xác thực
+
+<Steps>
+
+1. **Tạo project**
+
+   Trong quickstart này chúng ta sẽ tạo voice agent dùng được trong browser. Bạn có thể bắt đầu với [`Next.js`](https://nextjs.org/docs/getting-started/installation) hoặc [`Vite`](https://vite.dev/guide/installation.html).
+
+   ```bash
+   npm create vite@latest my-project -- --template vanilla-ts
+   ```
+
+2. **Cài đặt package khuyến nghị** (yêu cầu Zod v4)
+
+   ```bash
+   npm install @openai/agents zod
+   ```
+
+3. **Tạo client ephemeral token**
+
+   Vì ứng dụng chạy trong browser người dùng, chúng ta cần cách an toàn để kết nối model qua Realtime API. Backend tạo ephemeral token ngắn hạn, browser dùng token đó để thiết lập kết nối WebRTC.
+
+   ```bash
+   export OPENAI_API_KEY="sk-proj-...(key của bạn)"
+   curl -X POST https://api.openai.com/v1/realtime/client_secrets \
+      -H "Authorization: Bearer $OPENAI_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "session": {
+          "type": "realtime",
+          "model": "gpt-realtime"
+        }
+      }'
+   ```
+
+</Steps>
+
+<Aside type="note">
+  Luồng browser production: browser hỏi backend lấy ephemeral token mới, backend
+  gọi `POST /v1/realtime/client_secrets` với server API key, browser truyền
+  token `ek_...` trả về vào `session.connect(...)`.
+</Aside>
+
+## Tạo và kết nối voice agent
+
+<Steps>
+
+1. **Tạo Agent đầu tiên**
+
+   Tạo [`RealtimeAgent`](/openai-agents-js/openai/agents-realtime/classes/realtimeagent/) rất tương tự tạo [`Agent`](/openai-agents-js/vi/guides/agents) thông thường.
+
+   ```typescript
+   import { RealtimeAgent } from '@openai/agents/realtime';
+
+   const agent = new RealtimeAgent({
+     name: 'Assistant',
+     instructions: 'You are a helpful assistant.',
+   });
+   ```
+
+2. **Tạo session**
+
+   Không giống agent thông thường, voice agent chạy liên tục bên trong `RealtimeSession` xử lý hội thoại và kết nối tới model.
+
+   ```typescript
+   import { RealtimeSession } from '@openai/agents/realtime';
+
+   const session = new RealtimeSession(agent, {
+     model: 'gpt-realtime-1.5',
+   });
+   ```
+
+3. **Kết nối session**
+
+   ```typescript
+   await session.connect({ apiKey: 'ek_...(token của bạn)' });
+   ```
+
+</Steps>
+
+## Chạy và kiểm tra ứng dụng
+
+<Steps>
+
+1. **Tổng hợp lại**
+
+   <Code lang="typescript" code={helloWorldExample} />
+
+2. **Khởi động ứng dụng và bắt đầu nói**
+
+   ```bash
+   npm run dev
+   ```
+
+</Steps>
+
+## Bước tiếp theo
+
+Từ đây bạn có thể thiết kế và xây dựng voice agent:
+
+- Thêm [tool](/openai-agents-js/vi/guides/voice-agents/build#tools), [handoff](/openai-agents-js/vi/guides/voice-agents/build#handoffs), và [guardrail](/openai-agents-js/vi/guides/voice-agents/build#guardrails).
+- Tìm hiểu [turn detection và voice activity detection](/openai-agents-js/vi/guides/voice-agents/build#turn-detection-and-voice-activity-detection), [interruption](/openai-agents-js/vi/guides/voice-agents/build#interruptions).
+- Thêm [text input](/openai-agents-js/vi/guides/voice-agents/build#text-input), [image input](/openai-agents-js/vi/guides/voice-agents/build#image-input).
+- Chọn transport phù hợp: [WebRTC](/openai-agents-js/vi/guides/voice-agents/transport#webrtc-is-the-default-browser-choice), [WebSocket](/openai-agents-js/vi/guides/voice-agents/transport#websocket-is-the-default-server-choice).
