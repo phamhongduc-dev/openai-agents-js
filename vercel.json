@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm run prebuild && pnpm -F docs build",
+  "buildCommand": "pnpm run build && pnpm -F docs build",
   "outputDirectory": "docs/dist",
   "installCommand": "pnpm install",
   "framework": null
