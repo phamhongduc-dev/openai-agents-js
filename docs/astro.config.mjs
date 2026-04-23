@@ -431,7 +431,7 @@ const sidebar = [
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://openai.github.io',
+  site: 'https://phamhongduc-dev.github.io',
   base: 'openai-agents-js',
 
   integrations: [
