@@ -1,0 +1,6 @@
+{
+  "buildCommand": "pnpm run prebuild && pnpm -F docs build",
+  "outputDirectory": "docs/dist",
+  "installCommand": "pnpm install",
+  "framework": null
+}

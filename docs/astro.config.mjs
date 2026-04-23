@@ -431,9 +431,7 @@ const sidebar = [
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://phamhongduc-dev.github.io',
-  base: 'openai-agents-js',
-
+  site: `https://openai-agents-js-kappa.vercel.app/`,
   integrations: [
     starlight({
       title: 'OpenAI Agents SDK',
