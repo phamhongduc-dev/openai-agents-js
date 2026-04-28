@@ -16,9 +16,9 @@ Trang này đề cập **các giá trị mặc định toàn SDK** mà bạn th�
 
 Nếu bạn cần cấu hình cho một `Agent`, `Runner`, hoặc lệnh gọi `run()` cụ thể, hãy xem:
 
-- [Chạy Agent](/openai-agents-js/vi/guides/running-agents) cho `Runner` và các tùy chọn theo lần chạy.
-- [Model](/openai-agents-js/vi/guides/models) cho cài đặt model ở cấp agent và runner.
-- [Tracing](/openai-agents-js/vi/guides/tracing) cho cấu hình tracing theo lần chạy và hành vi exporter.
+- [Chạy Agent](/vi/guides/running-agents) cho `Runner` và các tùy chọn theo lần chạy.
+- [Model](/vi/guides/models) cho cài đặt model ở cấp agent và runner.
+- [Tracing](/vi/guides/tracing) cho cấu hình tracing theo lần chạy và hành vi exporter.
 
 ## OpenAI client và transport
 
@@ -62,7 +62,7 @@ Nếu bạn đang dùng Responses API, bạn cũng có thể chọn transport c�
 
 Dùng `setOpenAIResponsesTransport('websocket')` để bật WebSocket transport và `setOpenAIResponsesTransport('http')` để chuyển lại. Nếu bạn định tuyến websocket traffic qua proxy hoặc gateway, hãy thiết lập `OPENAI_WEBSOCKET_BASE_URL` (hoặc cấu hình `websocketBaseURL` trên `OpenAIProvider` của bạn).
 
-Giá trị mặc định toàn process này chỉ ảnh hưởng đến các model được resolve qua OpenAI provider mặc định sau đó. Nếu bạn truyền instance `Model` cụ thể hoặc `modelProvider` tùy chỉnh, hãy cấu hình transport ở đó. Xem [hướng dẫn Model](/openai-agents-js/vi/guides/models#responses-websocket-transport).
+Giá trị mặc định toàn process này chỉ ảnh hưởng đến các model được resolve qua OpenAI provider mặc định sau đó. Nếu bạn truyền instance `Model` cụ thể hoặc `modelProvider` tùy chỉnh, hãy cấu hình transport ở đó. Xem [hướng dẫn Model](/vi/guides/models#responses-websocket-transport).
 
 ## Khả năng quan sát và debug
 
@@ -84,7 +84,7 @@ Tracing cũng có thể bị tắt hoàn toàn:
 
 <Code lang="typescript" code={setTracingDisabledExample} title="Tắt tracing" />
 
-Nếu bạn muốn tìm hiểu thêm về tính năng tracing, vui lòng xem [hướng dẫn Tracing](/openai-agents-js/vi/guides/tracing).
+Nếu bạn muốn tìm hiểu thêm về tính năng tracing, vui lòng xem [hướng dẫn Tracing](/vi/guides/tracing).
 
 ### Debug logging
 

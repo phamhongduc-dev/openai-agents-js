@@ -24,7 +24,7 @@ Agent là khối xây dựng chính của OpenAI Agents SDK. Một **Agent** là
 
 <Code lang="typescript" code={simpleAgent} title="Định nghĩa Agent cơ bản" />
 
-> Dùng trang này khi bạn muốn định nghĩa hoặc tùy chỉnh một `Agent` đơn lẻ. Nếu bạn đang quyết định cách nhiều agent nên cộng tác, hãy đọc [Điều phối Agent](/openai-agents-js/vi/guides/multi-agent).
+> Dùng trang này khi bạn muốn định nghĩa hoặc tùy chỉnh một `Agent` đơn lẻ. Nếu bạn đang quyết định cách nhiều agent nên cộng tác, hãy đọc [Điều phối Agent](/vi/guides/multi-agent).
 
 ### Chọn hướng dẫn tiếp theo
 
@@ -32,12 +32,12 @@ Dùng trang này như trung tâm cho việc định nghĩa agent. Chuyển sang 
 
 | Nếu bạn muốn... | Đọc tiếp |
 | --- | --- |
-| Chọn model hoặc cấu hình stored prompt | [Model](/openai-agents-js/vi/guides/models) |
-| Thêm khả năng cho agent | [Tool](/openai-agents-js/vi/guides/tools) |
-| Quyết định giữa manager và handoff | [Điều phối Agent](/openai-agents-js/vi/guides/multi-agent) |
-| Cấu hình hành vi handoff | [Handoff](/openai-agents-js/vi/guides/handoffs) |
-| Chạy lượt, stream event, hoặc quản lý trạng thái | [Chạy Agent](/openai-agents-js/vi/guides/running-agents) |
-| Kiểm tra output cuối, run item, hoặc resume | [Kết quả](/openai-agents-js/vi/guides/results) |
+| Chọn model hoặc cấu hình stored prompt | [Model](/vi/guides/models) |
+| Thêm khả năng cho agent | [Tool](/vi/guides/tools) |
+| Quyết định giữa manager và handoff | [Điều phối Agent](/vi/guides/multi-agent) |
+| Cấu hình hành vi handoff | [Handoff](/vi/guides/handoffs) |
+| Chạy lượt, stream event, hoặc quản lý trạng thái | [Chạy Agent](/vi/guides/running-agents) |
+| Kiểm tra output cuối, run item, hoặc resume | [Kết quả](/vi/guides/results) |
 
 Phần còn lại của trang này sẽ đi qua mọi tính năng Agent một cách chi tiết.
 
@@ -53,19 +53,19 @@ Constructor `Agent` nhận một object cấu hình duy nhất. Các property th
 | --- | --- | --- |
 | `name` | có | Định danh ngắn, dễ đọc. |
 | `instructions` | có | System prompt (string **hoặc** function – xem [Dynamic instruction](#dynamic-instructions)). |
-| `prompt` | không | Cấu hình prompt OpenAI Responses API. Chấp nhận object prompt tĩnh hoặc function. Xem [Prompt](/openai-agents-js/vi/guides/models#prompt). |
+| `prompt` | không | Cấu hình prompt OpenAI Responses API. Chấp nhận object prompt tĩnh hoặc function. Xem [Prompt](/vi/guides/models#prompt). |
 | `handoffDescription` | không | Mô tả ngắn được dùng khi agent này được cung cấp như một handoff tool. |
-| `handoffs` | không | Ủy quyền cuộc hội thoại cho agent chuyên biệt. Xem [Mẫu kết hợp](#composition-patterns) và [hướng dẫn Handoff](/openai-agents-js/vi/guides/handoffs). |
+| `handoffs` | không | Ủy quyền cuộc hội thoại cho agent chuyên biệt. Xem [Mẫu kết hợp](#composition-patterns) và [hướng dẫn Handoff](/vi/guides/handoffs). |
 | `model` | không | Tên model **hoặc** implement [`Model`](/openai-agents-js/openai/agents/interfaces/model/) tùy chỉnh. |
-| `modelSettings` | không | Tham số tinh chỉnh (temperature, top_p, v.v.). Xem [Model](/openai-agents-js/vi/guides/models#modelsettings). Nếu property cần không có ở cấp cao nhất, bạn có thể đưa vào `providerData`. |
-| `tools` | không | Mảng các instance [`Tool`](/openai-agents-js/openai/agents/type-aliases/tool/) mà model có thể gọi. Xem [Tool](/openai-agents-js/vi/guides/tools). |
-| `mcpServers` | không | Tool hỗ trợ MCP cho agent. Xem [hướng dẫn MCP](/openai-agents-js/vi/guides/mcp). |
-| `inputGuardrails` | không | Guardrail áp dụng cho user input đầu tiên trong chuỗi agent. Xem [Guardrail](/openai-agents-js/vi/guides/guardrails). |
-| `outputGuardrails` | không | Guardrail áp dụng cho output cuối cùng của agent này. Xem [Guardrail](/openai-agents-js/vi/guides/guardrails). |
-| `outputType` | không | Trả về structured output thay vì plain text. Xem [Output type](#output-types) và [Kết quả](/openai-agents-js/vi/guides/results#final-output). |
+| `modelSettings` | không | Tham số tinh chỉnh (temperature, top_p, v.v.). Xem [Model](/vi/guides/models#modelsettings). Nếu property cần không có ở cấp cao nhất, bạn có thể đưa vào `providerData`. |
+| `tools` | không | Mảng các instance [`Tool`](/openai-agents-js/openai/agents/type-aliases/tool/) mà model có thể gọi. Xem [Tool](/vi/guides/tools). |
+| `mcpServers` | không | Tool hỗ trợ MCP cho agent. Xem [hướng dẫn MCP](/vi/guides/mcp). |
+| `inputGuardrails` | không | Guardrail áp dụng cho user input đầu tiên trong chuỗi agent. Xem [Guardrail](/vi/guides/guardrails). |
+| `outputGuardrails` | không | Guardrail áp dụng cho output cuối cùng của agent này. Xem [Guardrail](/vi/guides/guardrails). |
+| `outputType` | không | Trả về structured output thay vì plain text. Xem [Output type](#output-types) và [Kết quả](/vi/guides/results#final-output). |
 | `toolUseBehavior` | không | Kiểm soát liệu kết quả function-tool có quay lại model hay kết thúc lần chạy. Xem [Ép dùng tool](#forcing-tool-use). |
 | `resetToolChoice` | không | Reset `toolChoice` về mặc định sau khi gọi tool (mặc định: `true`) để tránh vòng lặp dùng tool. Xem [Ép dùng tool](#forcing-tool-use). |
-| `handoffOutputTypeWarningEnabled` | không | Phát cảnh báo khi output type của handoff khác nhau (mặc định: `true`). Xem [Kết quả](/openai-agents-js/vi/guides/results#final-output). |
+| `handoffOutputTypeWarningEnabled` | không | Phát cảnh báo khi output type của handoff khác nhau (mặc định: `true`). Xem [Kết quả](/vi/guides/results#final-output). |
 
 <Code lang="typescript" code={agentWithTools} title="Agent với tool" />
 
@@ -106,7 +106,7 @@ Một số khái niệm agent ánh xạ trực tiếp sang khái niệm OpenAI p
 | `tools` / hosted tool | [Hướng dẫn Tool](https://developers.openai.com/api/docs/guides/tools) | Model cần tìm kiếm, truy xuất, chạy code, hoặc gọi function/tool của bạn. |
 | `conversationId` / `previousResponseId` | [Trạng thái cuộc hội thoại](https://developers.openai.com/api/docs/guides/conversation-state) | Bạn muốn OpenAI duy trì hoặc nối chuỗi trạng thái hội thoại giữa các lượt. |
 
-`conversationId` và `previousResponseId` là điều khiển runtime, không phải field của constructor `Agent`. Dùng [Chạy Agent](/openai-agents-js/vi/guides/running-agents) khi cần các entry point SDK đó.
+`conversationId` và `previousResponseId` là điều khiển runtime, không phải field của constructor `Agent`. Dùng [Chạy Agent](/vi/guides/running-agents) khi cần các entry point SDK đó.
 
 ---
 
@@ -117,21 +117,21 @@ Hai entry point SDK xuất hiện thường xuyên nhất khi agent tham gia m�
 1. **Manager (agent dùng như tool)** – một agent trung tâm sở hữu cuộc hội thoại và gọi các agent chuyên biệt được expose như tool.
 2. **Handoff** – agent ban đầu ủy quyền toàn bộ cuộc hội thoại cho agent chuyên biệt khi đã xác định được yêu cầu người dùng.
 
-Các cách tiếp cận này bổ trợ nhau. Manager cho bạn một nơi duy nhất để áp dụng guardrail hoặc rate limit, trong khi handoff cho phép mỗi agent tập trung vào một tác vụ mà không cần giữ quyền kiểm soát cuộc hội thoại. Để biết các đánh đổi thiết kế và khi nào chọn mẫu nào, xem [Điều phối Agent](/openai-agents-js/vi/guides/multi-agent).
+Các cách tiếp cận này bổ trợ nhau. Manager cho bạn một nơi duy nhất để áp dụng guardrail hoặc rate limit, trong khi handoff cho phép mỗi agent tập trung vào một tác vụ mà không cần giữ quyền kiểm soát cuộc hội thoại. Để biết các đánh đổi thiết kế và khi nào chọn mẫu nào, xem [Điều phối Agent](/vi/guides/multi-agent).
 
 #### Manager (agent dùng như tool)
 
-Trong mẫu này, manager không bao giờ chuyển giao quyền kiểm soát — LLM dùng tool và manager tổng hợp câu trả lời cuối cùng. Đọc thêm trong [hướng dẫn Tool](/openai-agents-js/vi/guides/tools#agents-as-tools).
+Trong mẫu này, manager không bao giờ chuyển giao quyền kiểm soát — LLM dùng tool và manager tổng hợp câu trả lời cuối cùng. Đọc thêm trong [hướng dẫn Tool](/vi/guides/tools#agents-as-tools).
 
 <Code lang="typescript" code={agentsAsTools} title="Agent dùng như tool" />
 
 #### Handoff
 
-Với handoff, triage agent định tuyến request, nhưng khi handoff xảy ra, agent chuyên biệt sở hữu cuộc hội thoại cho đến khi tạo ra output cuối cùng. Điều này giữ prompt ngắn gọn và cho phép bạn suy luận về mỗi agent một cách độc lập. Tìm hiểu thêm trong [hướng dẫn Handoff](/openai-agents-js/vi/guides/handoffs).
+Với handoff, triage agent định tuyến request, nhưng khi handoff xảy ra, agent chuyên biệt sở hữu cuộc hội thoại cho đến khi tạo ra output cuối cùng. Điều này giữ prompt ngắn gọn và cho phép bạn suy luận về mỗi agent một cách độc lập. Tìm hiểu thêm trong [hướng dẫn Handoff](/vi/guides/handoffs).
 
 <Code lang="typescript" code={agentWithHandoffs} title="Agent với handoff" />
 
-Nếu các target handoff có thể trả về output type khác nhau, hãy ưu tiên dùng `Agent.create(...)` thay vì `new Agent(...)`. Điều này cho phép TypeScript suy luận union của các shape `finalOutput` có thể qua handoff graph và tránh cảnh báo runtime được kiểm soát bởi `handoffOutputTypeWarningEnabled`. Xem [hướng dẫn kết quả](/openai-agents-js/vi/guides/results#final-output) cho ví dụ đầy đủ.
+Nếu các target handoff có thể trả về output type khác nhau, hãy ưu tiên dùng `Agent.create(...)` thay vì `new Agent(...)`. Điều này cho phép TypeScript suy luận union của các shape `finalOutput` có thể qua handoff graph và tránh cảnh báo runtime được kiểm soát bởi `handoffOutputTypeWarningEnabled`. Xem [hướng dẫn kết quả](/vi/guides/results#final-output) cho ví dụ đầy đủ.
 
 ---
 
@@ -191,7 +191,7 @@ Các tên event dùng chung:
 
 ### Guardrail
 
-Guardrail cho phép bạn validate hoặc biến đổi user input và agent output. Chúng được cấu hình qua mảng `inputGuardrails` và `outputGuardrails`. Xem [hướng dẫn Guardrail](/openai-agents-js/vi/guides/guardrails) để biết chi tiết.
+Guardrail cho phép bạn validate hoặc biến đổi user input và agent output. Chúng được cấu hình qua mảng `inputGuardrails` và `outputGuardrails`. Xem [hướng dẫn Guardrail](/vi/guides/guardrails) để biết chi tiết.
 
 ---
 
@@ -216,7 +216,7 @@ Khi tool có sẵn là `computerTool()` trên OpenAI Responses, `toolChoice: 'co
 
 <Code lang="typescript" code={agentForcingToolUse} title="Ép dùng tool" />
 
-Khi bạn dùng deferred Responses tool như `toolNamespace()`, function tool với `deferLoading: true`, hoặc hosted MCP tool với `deferLoading: true`, hãy giữ `modelSettings.toolChoice` ở `'auto'`. SDK từ chối ép dùng deferred tool hoặc helper built-in `tool_search` theo tên vì model cần quyết định khi nào tải các định nghĩa đó. Xem [hướng dẫn Tool](/openai-agents-js/vi/guides/tools#deferred-tool-loading-with-tool-search) để biết thiết lập đầy đủ.
+Khi bạn dùng deferred Responses tool như `toolNamespace()`, function tool với `deferLoading: true`, hoặc hosted MCP tool với `deferLoading: true`, hãy giữ `modelSettings.toolChoice` ở `'auto'`. SDK từ chối ép dùng deferred tool hoặc helper built-in `tool_search` theo tên vì model cần quyết định khi nào tải các định nghĩa đó. Xem [hướng dẫn Tool](/vi/guides/tools#deferred-tool-loading-with-tool-search) để biết thiết lập đầy đủ.
 
 #### Ngăn vòng lặp vô hạn
 
@@ -240,10 +240,10 @@ Lưu ý: `toolUseBehavior` chỉ áp dụng cho **function tool**. Hosted tool l
 
 ## Hướng dẫn liên quan
 
-- [Model](/openai-agents-js/vi/guides/models) cho chọn model, stored prompt, và cấu hình provider.
-- [Tool](/openai-agents-js/vi/guides/tools) cho function tool, hosted tool, MCP, và `agent.asTool()`.
-- [Điều phối Agent](/openai-agents-js/vi/guides/multi-agent) cho chọn giữa manager, handoff, và điều phối bằng code.
-- [Handoff](/openai-agents-js/vi/guides/handoffs) cho cấu hình ủy quyền chuyên biệt.
-- [Chạy Agent](/openai-agents-js/vi/guides/running-agents) cho thực thi lượt, streaming, và trạng thái hội thoại.
-- [Kết quả](/openai-agents-js/vi/guides/results) cho `finalOutput`, run item, và trạng thái resume.
+- [Model](/vi/guides/models) cho chọn model, stored prompt, và cấu hình provider.
+- [Tool](/vi/guides/tools) cho function tool, hosted tool, MCP, và `agent.asTool()`.
+- [Điều phối Agent](/vi/guides/multi-agent) cho chọn giữa manager, handoff, và điều phối bằng code.
+- [Handoff](/vi/guides/handoffs) cho cấu hình ủy quyền chuyên biệt.
+- [Chạy Agent](/vi/guides/running-agents) cho thực thi lượt, streaming, và trạng thái hội thoại.
+- [Kết quả](/vi/guides/results) cho `finalOutput`, run item, và trạng thái resume.
 - Khám phá reference TypeDoc đầy đủ tại **@openai/agents** trong sidebar.

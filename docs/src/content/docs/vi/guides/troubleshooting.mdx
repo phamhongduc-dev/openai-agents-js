@@ -15,7 +15,7 @@ OpenAI Agents SDK được hỗ trợ trên các môi trường server sau:
 
 - **Cloudflare Workers**: Agents SDK có thể dùng trong Cloudflare Workers, nhưng hiện có một số hạn chế:
   - SDK hiện yêu cầu bật `nodejs_compat`
-  - Trace cần được flush thủ công ở cuối request. [Xem hướng dẫn tracing](/openai-agents-js/vi/guides/tracing#export-loop-lifecycle) để biết thêm.
+  - Trace cần được flush thủ công ở cuối request. [Xem hướng dẫn tracing](/vi/guides/tracing#export-loop-lifecycle) để biết thêm.
   - Do hỗ trợ `AsyncLocalStorage` hạn chế của Cloudflare Workers, một số trace có thể không chính xác
   - Kết nối WebSocket đi ra phải dùng fetch-based upgrade (không phải constructor `WebSocket` toàn cục). Cho Realtime, dùng Cloudflare transport trong `@openai/agents-extensions` (`CloudflareRealtimeTransportLayer`).
 - **Responses API WebSocket transport**:

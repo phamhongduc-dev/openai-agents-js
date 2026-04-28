@@ -37,7 +37,7 @@ import runOrchestrationExample from '../../../../../../examples/docs/quickstart/
    export OPENAI_API_KEY=sk-...
    ```
 
-   Ngoài ra bạn có thể gọi `setDefaultOpenAIKey('<api key>')` để thiết lập key bằng code và dùng `setTracingExportApiKey('<api key>')` cho tracing. Xem [hướng dẫn cấu hình](/openai-agents-js/vi/guides/config) để biết thêm chi tiết.
+   Ngoài ra bạn có thể gọi `setDefaultOpenAIKey('<api key>')` để thiết lập key bằng code và dùng `setTracingExportApiKey('<api key>')` cho tracing. Xem [hướng dẫn cấu hình](/vi/guides/config) để biết thêm chi tiết.
 
 </Steps>
 
@@ -55,7 +55,7 @@ Bạn có thể dùng method `run` để chạy agent. Bạn kích hoạt một 
 
 <Code lang="typescript" code={runAgentExample} title="Chạy agent" />
 
-Cho lượt thứ hai, bạn có thể truyền `result.history` trở lại vào `run()`, gắn một [session](/openai-agents-js/vi/guides/sessions), hoặc tái sử dụng trạng thái quản lý bởi server OpenAI với `conversationId` / `previousResponseId`. Hướng dẫn [chạy agent](/openai-agents-js/vi/guides/running-agents) so sánh các cách tiếp cận này.
+Cho lượt thứ hai, bạn có thể truyền `result.history` trở lại vào `run()`, gắn một [session](/vi/guides/sessions), hoặc tái sử dụng trạng thái quản lý bởi server OpenAI với `conversationId` / `previousResponseId`. Hướng dẫn [chạy agent](/vi/guides/running-agents) so sánh các cách tiếp cận này.
 
 ## Cung cấp tool cho agent
 
@@ -111,6 +111,6 @@ Agents SDK sẽ tự động sinh trace cho bạn. Điều này cho phép bạn 
 
 Tìm hiểu cách xây dựng luồng agent phức tạp hơn:
 
-- Tìm hiểu về cấu hình [Agent](/openai-agents-js/vi/guides/agents).
-- Tìm hiểu về [chạy agent](/openai-agents-js/vi/guides/running-agents) và [session](/openai-agents-js/vi/guides/sessions).
-- Tìm hiểu về [tool](/openai-agents-js/vi/guides/tools), [guardrail](/openai-agents-js/vi/guides/guardrails), và [model](/openai-agents-js/vi/guides/models).
+- Tìm hiểu về cấu hình [Agent](/vi/guides/agents).
+- Tìm hiểu về [chạy agent](/vi/guides/running-agents) và [session](/vi/guides/sessions).
+- Tìm hiểu về [tool](/vi/guides/tools), [guardrail](/vi/guides/guardrails), và [model](/vi/guides/models).

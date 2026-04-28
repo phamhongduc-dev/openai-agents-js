@@ -5,7 +5,7 @@ description: Phối hợp luồng giữa nhiều agent
 
 Điều phối (orchestration) đề cập đến luồng agent trong ứng dụng của bạn. Agent nào chạy, theo thứ tự nào, và chúng quyết định điều gì xảy ra tiếp theo như thế nào? Có hai cách chính để điều phối agent:
 
-> Đọc trang này sau [Quickstart](/openai-agents-js/vi/guides/quickstart) hoặc [hướng dẫn Agent](/openai-agents-js/vi/guides/agents#composition-patterns). Trang này nói về thiết kế workflow xuyên nhiều agent, không phải constructor `Agent`.
+> Đọc trang này sau [Quickstart](/vi/guides/quickstart) hoặc [hướng dẫn Agent](/vi/guides/agents#composition-patterns). Trang này nói về thiết kế workflow xuyên nhiều agent, không phải constructor `Agent`.
 
 1. Cho phép LLM đưa ra quyết định: sử dụng trí tuệ của LLM để lên kế hoạch, suy luận, và quyết định các bước cần thực hiện.
 2. Điều phối bằng code: xác định luồng agent thông qua code.
@@ -52,8 +52,8 @@ Chúng tôi có nhiều ví dụ tại [`examples/agent-patterns`](https://githu
 
 ## Hướng dẫn liên quan
 
-- [Agent](/openai-agents-js/vi/guides/agents) cho mẫu kết hợp và cấu hình agent.
-- [Tool](/openai-agents-js/vi/guides/tools#agents-as-tools) cho `agent.asTool()` và điều phối kiểu manager.
-- [Handoff](/openai-agents-js/vi/guides/handoffs) cho ủy quyền giữa agent chuyên biệt.
-- [Chạy Agent](/openai-agents-js/vi/guides/running-agents) cho `Runner` và điều khiển điều phối theo lần chạy.
-- [Quickstart](/openai-agents-js/vi/guides/quickstart) cho ví dụ handoff đầy đủ tối thiểu.
+- [Agent](/vi/guides/agents) cho mẫu kết hợp và cấu hình agent.
+- [Tool](/vi/guides/tools#agents-as-tools) cho `agent.asTool()` và điều phối kiểu manager.
+- [Handoff](/vi/guides/handoffs) cho ủy quyền giữa agent chuyên biệt.
+- [Chạy Agent](/vi/guides/running-agents) cho `Runner` và điều khiển điều phối theo lần chạy.
+- [Quickstart](/vi/guides/quickstart) cho ví dụ handoff đầy đủ tối thiểu.
